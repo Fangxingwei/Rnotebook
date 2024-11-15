@@ -1,0 +1,45 @@
+project:
+  type: book
+
+book:
+  title: "Rnotebook"
+  author: "Wei"
+  date: "2024/11/12"
+  chapters:
+    - index.qmd
+    - table1.qmd
+    - Logistic-table.qmd
+    - Cox-table.qmd
+    - excel-table.qmd
+    - km-figure.qmd
+    - PSM.qmd
+
+lightbox: true
+execute:
+  fig-width: 6
+  fig-asp: 0.618
+  fig-alt: center
+  warning: false
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    df-print: kable # dataframe渲染风格
+    number-sections: true # 是否显示章节编号
+    # embed-resources: true
+    # 代码设置
+    code-fold: show
+    code-tools: true
+    code-link: true # 代码链接
+    code-summary: "R code"
+    highlight-style: atom-one
+    cache: true
+
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>" 
+    R.options:
+      knitr.graphics.auto_pdf: true
+

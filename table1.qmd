@@ -1,0 +1,149 @@
+---
+execute: 
+  warning: false
+---
+
+```{r}
+#| include: false
+source("_set_gtsummary_theme.R")
+```
+
+# 统计描述三线表
+
+使用的`data`为`gtsummary`包中的`trial`
+
+```{r}
+library(tidyverse)
+library(gtsummary)
+data <- trial
+head(trial)
+```
+
+# 统计描述的3大步骤{.unnumbered}
+
+1.  数据变量类型的转换；
+
+2.  变量分布的确定，以选用合适的描述指标；
+
+3.  选用合适的方法进行统计描述。
+
+## 数据类型转换
+
+1.   区分分类变量`var_fct`和连续变量`var_num`
+
+2.   分类变量转换为因子类型
+
+```{r}
+#| label: variable type transformation
+#  筛选unique()小于等于level的变量
+select_fct_vars <-
+  function(data, level) {
+    data |>
+      summarise_all(n_distinct) |>
+      select_if(~ all(. <= level)) |>
+      colnames()
+  }
+
+var_fct <- select_fct_vars(data, 4) #level = 4
+cat('分类变量：', paste(var_fct, collapse = ', '), '\n')
+
+var_num <- setdiff(colnames(data), var_fct)
+cat('连续变量：', paste(var_num, collapse = ', '), '\n')
+
+# 分类变量转换为因子类型,若level为数值,可以用fct_inseq进行排序
+data <-
+  data |>
+  mutate(
+    across(all_of(var_fct), as.factor),
+    across(all_of(var_num), as.numeric),
+    # across(var_fct, fct_inseq) # 如果分类变量是数字，按数字顺序排序
+  ) 
+```
+
+## 正态性检验
+
+-   对每个分组的连续变量进行正态性检验，若某一组p\<0.05，则该变量偏态
+
+-   对连续变量进行正态性检验，`n<5000`使用`shapiro_test()`
+
+-   正态性检验对样本量敏感，小样本通常会通过正态性检验。最好，画图验证结果。
+
+### `shapiro_test()`检验
+
+```{r}
+#| label: shapiro_test
+library(rstatix)
+library(DataExplorer)
+# 分组正态性检验
+zhengtai <- data |> 
+  group_by(response) |> # 分组变量
+  shapiro_test(var_num)
+zhengtai
+
+# 非正态变量：p < 0.05
+var_unnom <- zhengtai |>
+  filter(p < 0.05) |>
+  pull(variable) |> unique()
+
+# 正态变量：p >= 0.05
+var_nom <- setdiff(var_num, var_unnom)
+
+cat('非正态变量：', paste(var_unnom, collapse = ', '), '\n')
+cat('正态变量：', paste(var_nom, collapse = ', '), '\n')
+```
+
+### 密度曲线图和QQ图
+
+
+```{r}
+#| fig-cap: 
+#|   - "Fig 1: 密度曲线图"
+#|   - "Fig 2: Q-Q图"
+
+# 密度曲线图
+# 正态变量应该是两端分布均匀
+plot_density(data, ggtheme = theme_classic())
+
+# qq图
+# 正态变量应该是与对角线重叠
+plot_qq(data |> select(all_of(var_num)), ggtheme = theme_classic())
+```
+
+### 统计描述三线表
+
+
+```{r}
+#| label: tbl-stat
+#| tbl-cap: "Table 1: Two group compare"
+data2 <- 
+  data |>
+  drop_na(response) |> # 剔除缺失值
+  select(trt, age, grade, response) |> # 筛选自变量
+  mutate(response = paste("response", response))  # 因变量赋值
+
+data2 |>
+  tbl_summary(
+    by = response, # 多加一个分组变量
+    missing = "no", # 不显示缺失行
+    statistic = list(any_of(var_nom) ~ "{mean} ± {sd}"), # 正态变量用均值
+    type = list(any_of(var_fct) ~ "categorical"), # 某些变量指定类型
+    digits = list(
+      all_continuous() ~ 2, # 变量小数控制
+      all_categorical() ~ c(0, 1)
+    )
+  ) |>
+  add_p(
+    test = list(any_of(var_nom) ~ "t.test"), # 正态变量进行t检验 3组改为'aov'
+    test.args = list(
+      all_tests("fisher.test") ~ list(simulate.p.value = T) # 对检验参数进行调整,注意不能有逗号
+    )
+  ) |>
+  bold_p(t = 0.05) |> # 加粗p值小于0.05
+  add_overall() |> # 添加总体描述
+  bold_labels() |> # 加粗变量标签
+  add_stat_label() |> # 标签中统计量
+  italicize_levels() |> # 分类level斜体
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Group**") |> # 合并表头
+  modify_header(statistic ~ "**Test Statistic**") |> # 显示统计量
+  modify_fmt_fun(statistic ~ label_style_number(digits = 3))  # 统计量保留3位小数
+```

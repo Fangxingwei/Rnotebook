@@ -1,0 +1,80 @@
+---
+execute: 
+  warning: false
+---
+
+```{r}
+#| include: false
+source("_set_gtsummary_theme.R")
+```
+
+# Logistic回归三线表
+
+## 简略版
+
+```{r}
+#| tbl-cap: "Table 1: Simple Logistic Regression Results"
+library(tidyverse)
+library(gtsummary)
+data <- trial
+# 单因素
+uvreg1 <-
+  data |>
+  select(trt,age,grade,response) |>
+  tbl_uvregression(
+    y = response, #因变量
+    include = c(trt,age,grade), # 自变量
+    method = glm, #选用对应的模型方法
+    method.args = list(family = binomial), #选用对应的模型参数
+    exponentiate = T,
+    hide_n = T
+  ) |>
+  bold_labels() |>
+  italicize_levels() |>
+  bold_p(t = 0.10) 
+
+# 多因素
+model1 <-
+  reformulate(
+    data |> select(trt,age,grade) |> colnames(),
+    response = "I(response == '1')"
+  )
+
+mureg1 <-
+  glm(model1,family = binomial,data = data) |>
+  tbl_regression(
+    exponentiate = T
+  ) |>
+  bold_p(t = 0.05) 
+
+# reg1 <- # 2个table进行横向合并
+  tbl_merge(
+    tbls = list(uvreg1, mureg1),
+    tab_spanner = c("**Univariable**", "**Multivariable**")
+  )
+```
+
+## 详细版
+
+查看表格有哪些列，包含隐藏列
+
+```{r}
+#| column: page
+mureg1$table_body
+```
+
+添加β值、标准误、z值，模仿SPSS的输出结果。[$\text{Wald} \approx Z^2$]
+
+```{r}
+#| tbl-cap: "Table 2 : Complex Logistic Regression Results"
+mureg1 |>
+  modify_column_unhide(columns = c(statistic, std.error)) |>
+  modify_table_body(
+    ~ .x |>
+      mutate(beta = log(estimate), .before = estimate) |>
+      relocate(estimate, .after = statistic)
+  ) |>
+  modify_header(beta ~ "***β***",statistic ~ "**z-value**") |>
+  modify_fmt_fun(c(beta,statistic) ~ purrr::partial(style_number, digits = 3))
+```
+

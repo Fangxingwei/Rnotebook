@@ -1,0 +1,105 @@
+---
+execute: 
+  warning: false
+---
+
+```{r}
+#| include: false
+source("_set_gtsummary_theme.R")
+```
+
+
+# 生存分析三线表
+
+## KM 曲线
+
+`add_p()`可以设定以下检验
+
+1.  `logrank`：这是最常用的测试方法，用于比较两组或多组的生存曲线。它假设生存函数在所有时间点都是比例的，即风险比是恒定的。它对中位生存时间更敏感，而不是早期或晚期的生存差异。
+
+2.  `tarone`：这是logrank测试的一种变体，主要用于处理数据中存在平局（即同一时间点多个事件发生的情况）。它对平局更敏感，适用于当生存时间中有大量平局的情况。
+
+3.  `survdiff`：这是一种广义的logrank测试，可以处理非比例风险的情况。它允许指定一个权重函数来调整测试对不同时间点的敏感度。例如，可以使用Fleming-Harrington权重来强调早期或晚期的差异。
+
+4.  `petopeto_gehanwilcoxon`：这种测试方法特别适用于非比例风险的情形。它对生存曲线早期的差异更敏感，通常用于检验早期的生存差异是否显著。
+
+5.  `coxph_lrt`：这是Cox比例风险回归模型的似然比测试（Likelihood Ratio Test）。它用于测试一个或多个协变量是否在模型中显著。
+
+6.  `coxph_wald`：这是Cox比例风险回归模型的Wald测试。Wald测试通常用于单个协变量的显著性检验。
+
+7.  `coxph_score`：这是Cox比例风险回归模型的Score测试（也称为Log-Rank Score Test）。它用于检验协变量是否在模型中显著，特别是在样本量较小的情况下。
+
+```{r}
+#| label: KM-tbl
+#| tbl-cap: "Table 1: Survival Curves"
+library(tidyverse)
+library(gtsummary)
+library(survival)
+data <- trial
+surv_tbl1 <-
+  data |> 
+  tbl_survfit(
+    y = Surv(ttdeath, death),
+    include = c(trt, grade),
+    probs = 0.5,
+    label_header = "**Median Survival**"
+  )
+
+surv_tbl2 <-
+  data |>
+  tbl_survfit(
+    y = Surv(ttdeath, death),
+    include = c(trt, grade),
+    times = c(12, 24),
+    label_header = "**{time} Month**"
+  ) |>
+  add_p(
+    test = "survdiff", test.args = list(rho = 0) # rho取值为0-1,0相当于logrank检验,1相当于breslow检验
+  ) |> 
+    modify_column_unhide("statistic")
+
+tbl_merge(list(surv_tbl1, surv_tbl2), tab_spanner = FALSE)
+```
+
+## Cox 回归结果表格
+
+`ttdeath`为生存时间,`death`为结局事件
+
+```{r}
+#| label: cox-reg-tbl
+#| tbl-cap: "Table 2: Cox Regression Results"
+library(tidyverse)
+library(gtsummary)
+library(survival)
+data <- trial
+
+# 单因素
+uvreg1 <-
+  data |>
+  select(trt, age, grade, ttdeath, death) |>
+  tbl_uvregression(
+    y = Surv(ttdeath, death), # time,status
+    method = coxph,
+    hide_n = T,
+    exponentiate = T,
+  ) |>
+  bold_labels() |>
+  italicize_levels() |>
+  bold_p(t = 0.10)
+
+# 多因素
+model1 <- as.formula("Surv(ttdeath, death) ~ trt + age + grade") # 回归方程
+
+mureg1 <-
+  coxph(model1, data = data) |>
+  tbl_regression(
+    exponentiate = T,
+  ) |>
+  bold_p(t = 0.05)
+
+# reg1 <- # 2个table进行横向合并
+tbl_merge(
+  tbls = list(uvreg1, mureg1),
+  tab_spanner = c("**Univariable**", "**Multivariable**")
+)
+```

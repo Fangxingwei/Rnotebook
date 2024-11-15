@@ -1,0 +1,76 @@
+---
+execute: 
+  warning: false
+  fig-asp: 1
+---
+
+# 生存分析图片绘制
+
+## KM曲线绘制
+
+```{r}
+library(tidyverse)
+library(gtsummary)
+library(survival)
+library(ggsurvfit)
+
+data <- df_lung
+
+fig <-
+  survfit2(Surv(time, status) ~ sex, data = data) |>
+  ggsurvfit(linewidth = 1) +
+  add_pvalue(caption = "Log-rank {p.value}",pvalue_fun = label_style_pvalue(digits = 3)) # 添加p值
+
+# 设定样式
+my_plot_theme <- function(plot) {
+  plot +
+    add_censor_mark() + # 加删失标记
+    add_confidence_interval() + # 加置信区间
+    add_quantile() + # 加中位生存时间
+    add_risktable(risktable_stats = "{n.risk} ({cum.event})") + # 加风险表
+    add_risktable_strata_symbol(symbol = "\U25CF", size = 10) + # 加风险表分层标记
+    labs(
+      # title = "Survival curve", # 图片标题
+      color = "Group", # 图例标题
+      fill = "Group", # 置信区间的图例标题，如果与Color一致，则两个合并
+      x = "Follow-up time(month)", # x轴标题
+      y = "Survival probability" # y轴标题
+    ) +
+    coord_cartesian(xlim = c(0, 24)) + # 限制x轴
+    scale_x_continuous(breaks = seq(0, 60, 6)) + # x轴刻度控制
+    theme(legend.position = c(0.8, 0.8)) +
+    ggsci::scale_color_jama() +
+    ggsci::scale_fill_jama() +
+    ggpubr::labs_pubr(base_size = 18)
+}
+
+fig |> my_plot_theme()
+```
+
+## 校正Cox回归
+
+```{r}
+library(tidyverse)
+library(survival)
+library(ggsurvfit)
+data <- df_lung
+
+fig2 <-
+  coxph(Surv(time, status) ~ age + strata(sex), data = data) |>
+  survfit2() |>
+  ggsurvfit(linewidth = 1) 
+
+fig2 |> my_plot_theme()
+```
+
+## 竞争分析模型
+`death_cr`为3分类变量
+
+```{r}
+library(tidycmprsk)
+
+fig3 <- cuminc(Surv(ttdeath, death_cr) ~ trt, tidycmprsk::trial) |> 
+  ggcuminc(outcome = "death from cancer") +
+  add_pvalue(caption = "Gray {p.value}",pvalue_fun = label_style_pvalue(digits = 3)) # 添加p值
+fig3 |> my_plot_theme()
+```

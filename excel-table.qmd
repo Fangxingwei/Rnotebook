@@ -1,0 +1,27 @@
+---
+execute: 
+  warning: false
+---
+
+# 表格结果导出word
+
+`save_as_docx()` 函数可以导出表格为word文件，但是默认的表格样式比较丑，需要自定义表格样式，可以使用`flextable`包来美化表格。`max_row`控制显示的行数，`show_coltype`控制是否显示列类型。`prop_section`函数可以设置纸张大小，`page_size(orient = "portrait")` 设置为纵向，`page_size(orient = "landscape")` 设置为横向。
+
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(officer)
+library(flextable)
+
+ft <- mtcars |> as_flextable(max_row = 10, show_coltype = F)
+# ft |> save_as_docx(
+#   path = "table.docx",
+#   pr_section = prop_section(
+#     page_size(orient = "portrait") # "landscape" width和height 控制纸张大小
+#   )
+# )
+# print(ft, preview = "docx") # 渲染成对应文件
+ft
+```
+

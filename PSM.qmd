@@ -1,0 +1,144 @@
+---
+execute: 
+  warning: false
+---
+
+```{r}
+#| include: false
+source("_set_gtsummary_theme.R")
+```
+
+# 倾向性评分匹配
+
+`I(trt=="Drug A")将trt等于Drug A转化为1，其他转化为0`
+
+```{r}
+#| label: psm
+library(tidyverse)
+library(MatchIt)
+library(gtsummary)
+library(cobalt)
+data <- trial |> drop_na() # 剔除缺失值
+
+
+df_matchit_results <-
+  MatchIt::matchit(
+    I(trt == "Drug A") ~ . - response, # 以分组变量为因变量，需要匹配的变量为自变量，构建模型
+    data = data,
+    method = "nearest", # 匹配方法
+    distance = "glm", # 距离度量方法
+    link = "logit",
+    caliper = 0.2, # 卡钳值设定
+    std.caliper = TRUE,
+    replace = FALSE,
+    ratio = 1 # 匹配比例 1:1
+  )
+
+df_post_match <- MatchIt::match.data(df_matchit_results) # 提取匹配结果
+head(df_post_match)
+```
+
+## 绘图
+
+### MatchIt包
+```{r}
+#| label: fig-matchit-plot
+df_matchit_results |> plot(type = "jitter", interactive = FALSE)
+df_matchit_results |>
+  summary() |>
+  plot()
+```
+
+### cobalt包
+
+```{r}
+#| label: fig-cobalt-plot
+df_matchit_results |> love.plot(binary = "std", thresholds = 0.1, abs = T)
+df_matchit_results |> bal.plot(
+  var.name = "distance", which = "both",
+  type = "histogram", mirror = TRUE
+)
+```
+
+## 基线表
+
+
+```{r}
+#| label: psm-table
+#| column: page
+#| tbl-cap: "Table 1: Baseline Characteristics"
+tbl_pre_match <-
+  data |>
+  tbl_summary(
+    by = trt, # group variable
+    digits = list(
+      all_continuous() ~ 2,
+      all_categorical() ~ c(0, 1),
+      "age" ~ 0
+    ),
+    include = c("age", "marker", "stage", "grade", "death")
+  ) |>
+  add_difference(
+    test = everything() ~ "smd",
+    estimate_fun = ~ label_style_number(digits = 3)
+  )
+
+tbl_post_match <-
+  df_post_match |>
+  tbl_summary(
+    by = trt,
+    digits = list(
+      all_continuous() ~ 2,
+      all_categorical() ~ c(0, 1),
+      "age" ~ 0
+    ),
+    include = c("age", "marker", "stage", "grade", "death")
+  ) |>
+  add_difference(
+    test = everything() ~ "smd",
+    estimate_fun = ~ label_style_number(digits = 3)
+  )
+
+tbl_set <-
+  function(tbl) {
+    tbl |>
+      modify_header(
+        all_stat_cols() ~ "**{level}**  \nN= {n}",
+        estimate ~ "**SMD**" # rename Difference to SMD
+      ) |>
+      modify_column_hide(columns = "conf.low") |> # hide 95%CI
+      bold_labels() |>
+      add_stat_label() |>
+      italicize_levels() |>
+      add_p(pvalue_fun = label_style_pvalue(digits = 3))
+  }
+
+desc_pre_match <- tbl_pre_match |> tbl_set()  
+desc_post_match <- tbl_post_match |> tbl_set()  
+
+tbl_merge(
+    tbls = list(desc_pre_match, desc_post_match),
+    tab_spanner = c("**pre match**", "**post match**")
+  )
+```
+
+## 条件logistic回归
+
+
+```{r}
+library(survival)
+model_clog <-
+  reformulate(
+    data |> select(ttdeath) |> colnames(),
+    response = "I(response == '1')"
+  )
+
+clogit(model_clog,
+  data = df_post_match,
+  weights = weights, method = "breslow"
+) |>
+  tbl_regression(
+    exponentiate = T,
+  ) |>
+  bold_p(t = 0.05) 
+```
