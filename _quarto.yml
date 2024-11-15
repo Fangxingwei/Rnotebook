@@ -20,6 +20,7 @@ execute:
   fig-asp: 0.618
   fig-alt: center
   warning: false
+  freeze: auto
 
 format:
   html:
