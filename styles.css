@@ -1,0 +1,16 @@
+/* styles.css */
+/* 设置中文字体为LXGW WenKai */
+body {
+    font-family: 'LXGW WenKai', sans-serif; /* 设置主体字体 */
+  }
+  
+  /* 设置英文字体为Cascadia Mono */
+  code, pre {
+    font-family: 'Cascadia Mono', 'LXGW WenKai', monospace; /* 设置代码和预格式化文本字体 */
+  }
+  
+  /* 如果你希望其他文本（如段落）也使用Cascadia Mono作为英文字体，可以添加以下样式 */
+  p {
+    font-family: 'LXGW WenKai', 'Cascadia Mono', sans-serif;
+  }
+  
