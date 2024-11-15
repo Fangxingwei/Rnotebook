@@ -1,0 +1,15 @@
+{
+  "hash": "d7826952bea33e7a0d4c5b1b2ade9f18",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\nexecute: \n  warning: false\n  fig-asp: 1\n---\n\n\n\n\n# 生存分析图片绘制\n\n## KM曲线绘制\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\nlibrary(gtsummary)\nlibrary(survival)\nlibrary(ggsurvfit)\n\ndata <- df_lung\n\nfig <-\n  survfit2(Surv(time, status) ~ sex, data = data) |>\n  ggsurvfit(linewidth = 1) +\n  add_pvalue(caption = \"Log-rank {p.value}\",pvalue_fun = label_style_pvalue(digits = 3)) # 添加p值\n\n# 设定样式\nmy_plot_theme <- function(plot) {\n  plot +\n    add_censor_mark() + # 加删失标记\n    add_confidence_interval() + # 加置信区间\n    add_quantile() + # 加中位生存时间\n    add_risktable(risktable_stats = \"{n.risk} ({cum.event})\") + # 加风险表\n    add_risktable_strata_symbol(symbol = \"\\U25CF\", size = 10) + # 加风险表分层标记\n    labs(\n      # title = \"Survival curve\", # 图片标题\n      color = \"Group\", # 图例标题\n      fill = \"Group\", # 置信区间的图例标题，如果与Color一致，则两个合并\n      x = \"Follow-up time(month)\", # x轴标题\n      y = \"Survival probability\" # y轴标题\n    ) +\n    coord_cartesian(xlim = c(0, 24)) + # 限制x轴\n    scale_x_continuous(breaks = seq(0, 60, 6)) + # x轴刻度控制\n    theme(legend.position = c(0.8, 0.8)) +\n    ggsci::scale_color_jama() +\n    ggsci::scale_fill_jama() +\n    ggpubr::labs_pubr(base_size = 18)\n}\n\nfig |> my_plot_theme()\n```\n\n::: {.cell-output-display}\n![](km-figure_files/figure-html/unnamed-chunk-1-1.png){width=576}\n:::\n:::\n\n\n\n\n## 校正Cox回归\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidyverse)\nlibrary(survival)\nlibrary(ggsurvfit)\ndata <- df_lung\n\nfig2 <-\n  coxph(Surv(time, status) ~ age + strata(sex), data = data) |>\n  survfit2() |>\n  ggsurvfit(linewidth = 1) \n\nfig2 |> my_plot_theme()\n```\n\n::: {.cell-output-display}\n![](km-figure_files/figure-html/unnamed-chunk-2-1.png){width=576}\n:::\n:::\n\n\n\n\n## 竞争分析模型\n`death_cr`为3分类变量\n\n\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(tidycmprsk)\n\nfig3 <- cuminc(Surv(ttdeath, death_cr) ~ trt, tidycmprsk::trial) |> \n  ggcuminc(outcome = \"death from cancer\") +\n  add_pvalue(caption = \"Gray {p.value}\",pvalue_fun = label_style_pvalue(digits = 3)) # 添加p值\nfig3 |> my_plot_theme()\n```\n\n::: {.cell-output-display}\n![](km-figure_files/figure-html/unnamed-chunk-3-1.png){width=576}\n:::\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

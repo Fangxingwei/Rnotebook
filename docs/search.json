@@ -1,0 +1,172 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Rnotebook",
+    "section": "",
+    "text": "Preface\n这是个人平时写代码时的一些笔记，记录一些常用的代码片段，方便日后查阅。",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "table1.html",
+    "href": "table1.html",
+    "title": "\n1  统计描述三线表\n",
+    "section": "",
+    "text": "统计描述的3大步骤",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>统计描述三线表</span>"
+    ]
+  },
+  {
+    "objectID": "table1.html#数据类型转换",
+    "href": "table1.html#数据类型转换",
+    "title": "\n1  统计描述三线表\n",
+    "section": "\n1.1 数据类型转换",
+    "text": "1.1 数据类型转换\n\n区分分类变量var_fct和连续变量var_num\n分类变量转换为因子类型\n\n\nR code#  筛选unique()小于等于level的变量\nselect_fct_vars &lt;-\n  function(data, level) {\n    data |&gt;\n      summarise_all(n_distinct) |&gt;\n      select_if(~ all(. &lt;= level)) |&gt;\n      colnames()\n  }\n\nvar_fct &lt;- select_fct_vars(data, 4) #level = 4\ncat('分类变量：', paste(var_fct, collapse = ', '), '\\n')\n#&gt; 分类变量： trt, stage, grade, response, death\n\nvar_num &lt;- setdiff(colnames(data), var_fct)\ncat('连续变量：', paste(var_num, collapse = ', '), '\\n')\n#&gt; 连续变量： age, marker, ttdeath\n\n# 分类变量转换为因子类型,若level为数值,可以用fct_inseq进行排序\ndata &lt;-\n  data |&gt;\n  mutate(\n    across(all_of(var_fct), as.factor),\n    across(all_of(var_num), as.numeric),\n    # across(var_fct, fct_inseq) # 如果分类变量是数字，按数字顺序排序\n  )",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>统计描述三线表</span>"
+    ]
+  },
+  {
+    "objectID": "table1.html#正态性检验",
+    "href": "table1.html#正态性检验",
+    "title": "\n1  统计描述三线表\n",
+    "section": "\n1.2 正态性检验",
+    "text": "1.2 正态性检验\n\n对每个分组的连续变量进行正态性检验，若某一组p&lt;0.05，则该变量偏态\n对连续变量进行正态性检验，n&lt;5000使用shapiro_test()\n正态性检验对样本量敏感，小样本通常会通过正态性检验。最好，画图验证结果。\n\n\n1.2.1 shapiro_test()检验\n\nR codelibrary(rstatix)\nlibrary(DataExplorer)\n# 分组正态性检验\nzhengtai &lt;- data |&gt; \n  group_by(response) |&gt; # 分组变量\n  shapiro_test(var_num)\nzhengtai\n\n\n\n\nresponse\nvariable\nstatistic\np\n\n\n\n0\nage\n0.9951463\n0.9486361\n\n\n0\nmarker\n0.8615600\n0.0000000\n\n\n0\nttdeath\n0.8484471\n0.0000000\n\n\n1\nage\n0.9862580\n0.7536028\n\n\n1\nmarker\n0.8937848\n0.0001167\n\n\n1\nttdeath\n0.6701865\n0.0000000\n\n\nNA\nage\n0.9592189\n0.8137008\n\n\nNA\nmarker\n0.9154729\n0.4350621\n\n\nNA\nttdeath\n0.8537584\n0.1329861\n\n\n\n\n\nR code\n# 非正态变量：p &lt; 0.05\nvar_unnom &lt;- zhengtai |&gt;\n  filter(p &lt; 0.05) |&gt;\n  pull(variable) |&gt; unique()\n\n# 正态变量：p &gt;= 0.05\nvar_nom &lt;- setdiff(var_num, var_unnom)\n\ncat('非正态变量：', paste(var_unnom, collapse = ', '), '\\n')\n#&gt; 非正态变量： marker, ttdeath\ncat('正态变量：', paste(var_nom, collapse = ', '), '\\n')\n#&gt; 正态变量： age\n\n\n\n1.2.2 密度曲线图和QQ图\n\nR code# 密度曲线图\n# 正态变量应该是两端分布均匀\nplot_density(data, ggtheme = theme_classic())\n\n\n\nFig 1: 密度曲线图\n\n\nR code\n# qq图\n# 正态变量应该是与对角线重叠\nplot_qq(data |&gt; select(all_of(var_num)), ggtheme = theme_classic())\n\n\n\nFig 2: Q-Q图\n\n\n\n\n1.2.3 统计描述三线表\n\nR codedata2 &lt;- \n  data |&gt;\n  drop_na(response) |&gt; # 剔除缺失值\n  select(trt, age, grade, response) |&gt; # 筛选自变量\n  mutate(response = paste(\"response\", response))  # 因变量赋值\n\ndata2 |&gt;\n  tbl_summary(\n    by = response, # 多加一个分组变量\n    missing = \"no\", # 不显示缺失行\n    statistic = list(any_of(var_nom) ~ \"{mean} ± {sd}\"), # 正态变量用均值\n    type = list(any_of(var_fct) ~ \"categorical\"), # 某些变量指定类型\n    digits = list(\n      all_continuous() ~ 2, # 变量小数控制\n      all_categorical() ~ c(0, 1)\n    )\n  ) |&gt;\n  add_p(\n    test = list(any_of(var_nom) ~ \"t.test\"), # 正态变量进行t检验 3组改为'aov'\n    test.args = list(\n      all_tests(\"fisher.test\") ~ list(simulate.p.value = T) # 对检验参数进行调整,注意不能有逗号\n    )\n  ) |&gt;\n  bold_p(t = 0.05) |&gt; # 加粗p值小于0.05\n  add_overall() |&gt; # 添加总体描述\n  bold_labels() |&gt; # 加粗变量标签\n  add_stat_label() |&gt; # 标签中统计量\n  italicize_levels() |&gt; # 分类level斜体\n  modify_spanning_header(c(\"stat_1\", \"stat_2\") ~ \"**Group**\") |&gt; # 合并表头\n  modify_header(statistic ~ \"**Test Statistic**\") |&gt; # 显示统计量\n  modify_fmt_fun(statistic ~ label_style_number(digits = 3))  # 统计量保留3位小数\n\n\nTable 1.1: Table 1: Two group compare\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCharacteristic\n\nOverall N = 193\n\nGroup\n\n\nTest Statistic1\n\n\np-value1\n\n\n\n\nresponse 0 N = 132\n\nresponse 1 N = 61\n\n\n\n\ntrt, n (%)\n\n\n\n0.394\n0.5\n\n\n    Drug A\n95 (49.2%)\n67 (50.8%)\n28 (45.9%)\n\n\n\n\n    Drug B\n98 (50.8%)\n65 (49.2%)\n33 (54.1%)\n\n\n\n\nage, Mean ± SD\n47.15 ± 14.42\n45.94 ± 14.43\n49.78 ± 14.18\n-1.695\n0.093\n\n\nGrade, n (%)\n\n\n\n0.150\n&gt;0.9\n\n\n    I\n67 (34.7%)\n46 (34.8%)\n21 (34.4%)\n\n\n\n\n    II\n63 (32.6%)\n44 (33.3%)\n19 (31.1%)\n\n\n\n\n    III\n63 (32.6%)\n42 (31.8%)\n21 (34.4%)\n\n\n\n\n\n\n1 Pearson’s Chi-squared test; Welch Two Sample t-test",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>统计描述三线表</span>"
+    ]
+  },
+  {
+    "objectID": "Logistic-table.html",
+    "href": "Logistic-table.html",
+    "title": "\n2  Logistic回归三线表\n",
+    "section": "",
+    "text": "2.1 简略版\nR codelibrary(tidyverse)\nlibrary(gtsummary)\ndata &lt;- trial\n# 单因素\nuvreg1 &lt;-\n  data |&gt;\n  select(trt,age,grade,response) |&gt;\n  tbl_uvregression(\n    y = response, #因变量\n    include = c(trt,age,grade), # 自变量\n    method = glm, #选用对应的模型方法\n    method.args = list(family = binomial), #选用对应的模型参数\n    exponentiate = T,\n    hide_n = T\n  ) |&gt;\n  bold_labels() |&gt;\n  italicize_levels() |&gt;\n  bold_p(t = 0.10) \n\n# 多因素\nmodel1 &lt;-\n  reformulate(\n    data |&gt; select(trt,age,grade) |&gt; colnames(),\n    response = \"I(response == '1')\"\n  )\n\nmureg1 &lt;-\n  glm(model1,family = binomial,data = data) |&gt;\n  tbl_regression(\n    exponentiate = T\n  ) |&gt;\n  bold_p(t = 0.05) \n\n# reg1 &lt;- # 2个table进行横向合并\n  tbl_merge(\n    tbls = list(uvreg1, mureg1),\n    tab_spanner = c(\"**Univariable**\", \"**Multivariable**\")\n  )\n\n\n\n\nTable 1: Simple Logistic Regression Results\n\n\n\n\n\n\n\n\n\n\n\nCharacteristic\n\nUnivariable\n\n\nMultivariable\n\n\n\n\nOR1\n\n\n95% CI1\n\np-value\n\nOR1\n\n\n95% CI1\n\np-value\n\n\n\n\nChemotherapy Treatment\n\n\n\n\n\n\n\n\n    Drug A\n—\n—\n\n—\n—\n\n\n\n    Drug B\n1.21\n0.66, 2.24\n0.5\n1.13\n0.60, 2.13\n0.7\n\n\nAge\n1.02\n1.00, 1.04\n0.10\n1.02\n1.00, 1.04\n0.10\n\n\nGrade\n\n\n\n\n\n\n\n\n    I\n—\n—\n\n—\n—\n\n\n\n    II\n0.95\n0.45, 2.00\n0.9\n0.85\n0.39, 1.85\n0.7\n\n\n    III\n1.10\n0.52, 2.29\n0.8\n1.01\n0.47, 2.15\n&gt;0.9\n\n\n\n\n1 OR = Odds Ratio, CI = Confidence Interval",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Logistic回归三线表</span>"
+    ]
+  },
+  {
+    "objectID": "Logistic-table.html#详细版",
+    "href": "Logistic-table.html#详细版",
+    "title": "\n2  Logistic回归三线表\n",
+    "section": "\n2.2 详细版",
+    "text": "2.2 详细版\n查看表格有哪些列，包含隐藏列\n\nR codemureg1$table_body\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nvariable\nvar_label\nvar_type\nreference_row\nrow_type\nheader_row\nN_obs\nN_event\nN\ncoefficients_type\ncoefficients_label\nlabel\nterm\nvar_class\nvar_nlevels\ncontrasts\ncontrasts_type\nn_obs\nn_event\nestimate\nstd.error\nstatistic\nnevent\nci\nconf.low\nconf.high\np.value\n\n\n\ntrt\nChemotherapy Treatment\ndichotomous\nNA\nlabel\nTRUE\n183\n58\n183\nlogistic\nOR\nChemotherapy Treatment\nNA\ncharacter\n2\ncontr.treatment\ntreatment\nNA\nNA\nNA\nNA\nNA\n58\nNA\nNA\nNA\nNA\n\n\ntrt\nChemotherapy Treatment\ndichotomous\nTRUE\nlevel\nFALSE\n183\n58\n183\nlogistic\nOR\nDrug A\ntrtDrug A\ncharacter\n2\ncontr.treatment\ntreatment\n89\n27\nNA\nNA\nNA\n58\n—\nNA\nNA\nNA\n\n\ntrt\nChemotherapy Treatment\ndichotomous\nFALSE\nlevel\nFALSE\n183\n58\n183\nlogistic\nOR\nDrug B\ntrtDrug B\ncharacter\n2\ncontr.treatment\ntreatment\n94\n31\n1.1323891\n0.3212781\n0.3869844\n58\n0.60, 2.13\n0.6034682\n2.134162\n0.6987677\n\n\nage\nAge\ncontinuous\nNA\nlabel\nNA\n183\n58\n183\nlogistic\nOR\nAge\nage\nnumeric\nNA\nNA\nNA\n183\n58\n1.0191820\n0.0113865\n1.6686729\n58\n1.00, 1.04\n0.9970074\n1.042736\n0.0951822\n\n\ngrade\nGrade\ncategorical\nNA\nlabel\nTRUE\n183\n58\n183\nlogistic\nOR\nGrade\nNA\nfactor\n3\ncontr.treatment\ntreatment\nNA\nNA\nNA\nNA\nNA\n58\nNA\nNA\nNA\nNA\n\n\ngrade\nGrade\ncategorical\nTRUE\nlevel\nFALSE\n183\n58\n183\nlogistic\nOR\nI\ngradeI\nfactor\n3\ncontr.treatment\ntreatment\n65\n21\nNA\nNA\nNA\n58\n—\nNA\nNA\nNA\n\n\ngrade\nGrade\ncategorical\nFALSE\nlevel\nFALSE\n183\n58\n183\nlogistic\nOR\nII\ngradeII\nfactor\n3\ncontr.treatment\ntreatment\n58\n17\n0.8517029\n0.3953432\n-0.4060207\n58\n0.39, 1.85\n0.3890615\n1.845587\n0.6847274\n\n\ngrade\nGrade\ncategorical\nFALSE\nlevel\nFALSE\n183\n58\n183\nlogistic\nOR\nIII\ngradeIII\nfactor\n3\ncontr.treatment\ntreatment\n60\n20\n1.0077014\n0.3851063\n0.0199216\n58\n0.47, 2.15\n0.4717029\n2.147384\n0.9841059\n\n\n\n\n\n\n添加β值、标准误、z值，模仿SPSS的输出结果。[\\(\\text{Wald} \\approx Z^2\\)]\n\nR codemureg1 |&gt;\n  modify_column_unhide(columns = c(statistic, std.error)) |&gt;\n  modify_table_body(\n    ~ .x |&gt;\n      mutate(beta = log(estimate), .before = estimate) |&gt;\n      relocate(estimate, .after = statistic)\n  ) |&gt;\n  modify_header(beta ~ \"***β***\",statistic ~ \"**z-value**\") |&gt;\n  modify_fmt_fun(c(beta,statistic) ~ purrr::partial(style_number, digits = 3))\n\n\n\n\nTable 2 : Complex Logistic Regression Results\n\n\n\n\n\n\n\n\n\n\nCharacteristic\nβ\n\nSE1\n\nz-value\n\nOR1\n\n\n95% CI1\n\np-value\n\n\n\nChemotherapy Treatment\n\n\n\n\n\n\n\n\n    Drug A\n\n—\n—\n—\n—\n\n\n\n    Drug B\n0.124\n0.321\n0.387\n1.13\n0.60, 2.13\n0.699\n\n\nAge\n0.019\n0.011\n1.669\n1.02\n1.00, 1.04\n0.095\n\n\nGrade\n\n\n\n\n\n\n\n\n    I\n\n—\n—\n—\n—\n\n\n\n    II\n-0.161\n0.395\n-0.406\n0.85\n0.39, 1.85\n0.685\n\n\n    III\n0.008\n0.385\n0.020\n1.01\n0.47, 2.15\n0.984\n\n\n\n\n1 SE = Standard Error, OR = Odds Ratio, CI = Confidence Interval",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Logistic回归三线表</span>"
+    ]
+  },
+  {
+    "objectID": "Cox-table.html",
+    "href": "Cox-table.html",
+    "title": "\n3  生存分析三线表\n",
+    "section": "",
+    "text": "3.1 KM 曲线\nadd_p()可以设定以下检验\nR codelibrary(tidyverse)\nlibrary(gtsummary)\nlibrary(survival)\ndata &lt;- trial\nsurv_tbl1 &lt;-\n  data |&gt; \n  tbl_survfit(\n    y = Surv(ttdeath, death),\n    include = c(trt, grade),\n    probs = 0.5,\n    label_header = \"**Median Survival**\"\n  )\n\nsurv_tbl2 &lt;-\n  data |&gt;\n  tbl_survfit(\n    y = Surv(ttdeath, death),\n    include = c(trt, grade),\n    times = c(12, 24),\n    label_header = \"**{time} Month**\"\n  ) |&gt;\n  add_p(\n    test = \"survdiff\", test.args = list(rho = 0) # rho取值为0-1,0相当于logrank检验,1相当于breslow检验\n  ) |&gt; \n    modify_column_unhide(\"statistic\")\n\ntbl_merge(list(surv_tbl1, surv_tbl2), tab_spanner = FALSE)\n\n\n\n\nTable 1: Survival Curves\n\n\n\n\n\n\n\n\n\nCharacteristic\nMedian Survival\n12 Month\n24 Month\n\nStatistic1\n\n\np-value1\n\n\n\n\nChemotherapy Treatment\n\n\n\n1.39\n0.239\n\n\n    Drug A\n24 (21, —)\n91% (85%, 97%)\n47% (38%, 58%)\n\n\n\n\n    Drug B\n21 (18, —)\n86% (80%, 93%)\n41% (33%, 52%)\n\n\n\n\nGrade\n\n\n\n5.25\n0.072\n\n\n    I\n— (22, —)\n97% (93%, 100%)\n51% (41%, 65%)\n\n\n\n\n    II\n22 (18, —)\n82% (74%, 92%)\n47% (37%, 61%)\n\n\n\n\n    III\n20 (18, 23)\n86% (78%, 95%)\n33% (23%, 47%)\n\n\n\n\n\n\n1 Log-rank test",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>生存分析三线表</span>"
+    ]
+  },
+  {
+    "objectID": "Cox-table.html#km-曲线",
+    "href": "Cox-table.html#km-曲线",
+    "title": "\n3  生存分析三线表\n",
+    "section": "",
+    "text": "logrank：这是最常用的测试方法，用于比较两组或多组的生存曲线。它假设生存函数在所有时间点都是比例的，即风险比是恒定的。它对中位生存时间更敏感，而不是早期或晚期的生存差异。\ntarone：这是logrank测试的一种变体，主要用于处理数据中存在平局（即同一时间点多个事件发生的情况）。它对平局更敏感，适用于当生存时间中有大量平局的情况。\nsurvdiff：这是一种广义的logrank测试，可以处理非比例风险的情况。它允许指定一个权重函数来调整测试对不同时间点的敏感度。例如，可以使用Fleming-Harrington权重来强调早期或晚期的差异。\npetopeto_gehanwilcoxon：这种测试方法特别适用于非比例风险的情形。它对生存曲线早期的差异更敏感，通常用于检验早期的生存差异是否显著。\ncoxph_lrt：这是Cox比例风险回归模型的似然比测试（Likelihood Ratio Test）。它用于测试一个或多个协变量是否在模型中显著。\ncoxph_wald：这是Cox比例风险回归模型的Wald测试。Wald测试通常用于单个协变量的显著性检验。\ncoxph_score：这是Cox比例风险回归模型的Score测试（也称为Log-Rank Score Test）。它用于检验协变量是否在模型中显著，特别是在样本量较小的情况下。",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>生存分析三线表</span>"
+    ]
+  },
+  {
+    "objectID": "Cox-table.html#cox-回归结果表格",
+    "href": "Cox-table.html#cox-回归结果表格",
+    "title": "\n3  生存分析三线表\n",
+    "section": "\n3.2 Cox 回归结果表格",
+    "text": "3.2 Cox 回归结果表格\nttdeath为生存时间,death为结局事件\n\nR codelibrary(tidyverse)\nlibrary(gtsummary)\nlibrary(survival)\ndata &lt;- trial\n\n# 单因素\nuvreg1 &lt;-\n  data |&gt;\n  select(trt, age, grade, ttdeath, death) |&gt;\n  tbl_uvregression(\n    y = Surv(ttdeath, death), # time,status\n    method = coxph,\n    hide_n = T,\n    exponentiate = T,\n  ) |&gt;\n  bold_labels() |&gt;\n  italicize_levels() |&gt;\n  bold_p(t = 0.10)\n\n# 多因素\nmodel1 &lt;- as.formula(\"Surv(ttdeath, death) ~ trt + age + grade\") # 回归方程\n\nmureg1 &lt;-\n  coxph(model1, data = data) |&gt;\n  tbl_regression(\n    exponentiate = T,\n  ) |&gt;\n  bold_p(t = 0.05)\n\n# reg1 &lt;- # 2个table进行横向合并\ntbl_merge(\n  tbls = list(uvreg1, mureg1),\n  tab_spanner = c(\"**Univariable**\", \"**Multivariable**\")\n)\n\n\n\n\nTable 2: Cox Regression Results\n\n\n\n\n\n\n\n\n\n\n\nCharacteristic\n\nUnivariable\n\n\nMultivariable\n\n\n\n\nHR1\n\n\n95% CI1\n\np-value\n\nHR1\n\n\n95% CI1\n\np-value\n\n\n\n\nChemotherapy Treatment\n\n\n\n\n\n\n\n\n    Drug A\n—\n—\n\n—\n—\n\n\n\n    Drug B\n1.25\n0.86, 1.81\n0.241\n1.30\n0.88, 1.92\n0.183\n\n\nAge\n1.01\n0.99, 1.02\n0.332\n1.01\n0.99, 1.02\n0.348\n\n\nGrade\n\n\n\n\n\n\n\n\n    I\n—\n—\n\n—\n—\n\n\n\n    II\n1.28\n0.80, 2.05\n0.305\n1.21\n0.73, 1.99\n0.459\n\n\n    III\n1.69\n1.07, 2.66\n0.024\n1.79\n1.12, 2.86\n0.014\n\n\n\n\n1 HR = Hazard Ratio, CI = Confidence Interval",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>生存分析三线表</span>"
+    ]
+  },
+  {
+    "objectID": "excel-table.html",
+    "href": "excel-table.html",
+    "title": "\n4  表格结果导出word\n",
+    "section": "",
+    "text": "save_as_docx() 函数可以导出表格为word文件，但是默认的表格样式比较丑，需要自定义表格样式，可以使用flextable包来美化表格。max_row控制显示的行数，show_coltype控制是否显示列类型。prop_section函数可以设置纸张大小，page_size(orient = \"portrait\") 设置为纵向，page_size(orient = \"landscape\") 设置为横向。\n\nR codelibrary(tidyverse)\nlibrary(officer)\nlibrary(flextable)\n\nft &lt;- mtcars |&gt; as_flextable(max_row = 10, show_coltype = F)\n# ft |&gt; save_as_docx(\n#   path = \"table.docx\",\n#   pr_section = prop_section(\n#     page_size(orient = \"portrait\") # \"landscape\" width和height 控制纸张大小\n#   )\n# )\n# print(ft, preview = \"docx\") # 渲染成对应文件\nft\n\n\n\n\n\nmpg\ncyl\ndisp\nhp\ndrat\nwt\nqsec\nvs\nam\ngear\ncarb\n\n\n\n21.0\n6\n160.0\n110\n3.9\n2.6\n16.5\n0\n1\n4\n4\n\n\n21.0\n6\n160.0\n110\n3.9\n2.9\n17.0\n0\n1\n4\n4\n\n\n22.8\n4\n108.0\n93\n3.8\n2.3\n18.6\n1\n1\n4\n1\n\n\n21.4\n6\n258.0\n110\n3.1\n3.2\n19.4\n1\n0\n3\n1\n\n\n18.7\n8\n360.0\n175\n3.1\n3.4\n17.0\n0\n0\n3\n2\n\n\n18.1\n6\n225.0\n105\n2.8\n3.5\n20.2\n1\n0\n3\n1\n\n\n14.3\n8\n360.0\n245\n3.2\n3.6\n15.8\n0\n0\n3\n4\n\n\n24.4\n4\n146.7\n62\n3.7\n3.2\n20.0\n1\n0\n4\n2\n\n\n22.8\n4\n140.8\n95\n3.9\n3.1\n22.9\n1\n0\n4\n2\n\n\n19.2\n6\n167.6\n123\n3.9\n3.4\n18.3\n1\n0\n4\n4\n\n\nn: 32",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>表格结果导出word</span>"
+    ]
+  },
+  {
+    "objectID": "km-figure.html",
+    "href": "km-figure.html",
+    "title": "\n5  生存分析图片绘制\n",
+    "section": "",
+    "text": "5.1 KM曲线绘制\nR codelibrary(tidyverse)\nlibrary(gtsummary)\nlibrary(survival)\nlibrary(ggsurvfit)\n\ndata &lt;- df_lung\n\nfig &lt;-\n  survfit2(Surv(time, status) ~ sex, data = data) |&gt;\n  ggsurvfit(linewidth = 1) +\n  add_pvalue(caption = \"Log-rank {p.value}\",pvalue_fun = label_style_pvalue(digits = 3)) # 添加p值\n\n# 设定样式\nmy_plot_theme &lt;- function(plot) {\n  plot +\n    add_censor_mark() + # 加删失标记\n    add_confidence_interval() + # 加置信区间\n    add_quantile() + # 加中位生存时间\n    add_risktable(risktable_stats = \"{n.risk} ({cum.event})\") + # 加风险表\n    add_risktable_strata_symbol(symbol = \"\\U25CF\", size = 10) + # 加风险表分层标记\n    labs(\n      # title = \"Survival curve\", # 图片标题\n      color = \"Group\", # 图例标题\n      fill = \"Group\", # 置信区间的图例标题，如果与Color一致，则两个合并\n      x = \"Follow-up time(month)\", # x轴标题\n      y = \"Survival probability\" # y轴标题\n    ) +\n    coord_cartesian(xlim = c(0, 24)) + # 限制x轴\n    scale_x_continuous(breaks = seq(0, 60, 6)) + # x轴刻度控制\n    theme(legend.position = c(0.8, 0.8)) +\n    ggsci::scale_color_jama() +\n    ggsci::scale_fill_jama() +\n    ggpubr::labs_pubr(base_size = 18)\n}\n\nfig |&gt; my_plot_theme()",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>生存分析图片绘制</span>"
+    ]
+  },
+  {
+    "objectID": "km-figure.html#校正cox回归",
+    "href": "km-figure.html#校正cox回归",
+    "title": "\n5  生存分析图片绘制\n",
+    "section": "\n5.2 校正Cox回归",
+    "text": "5.2 校正Cox回归\n\nR codelibrary(tidyverse)\nlibrary(survival)\nlibrary(ggsurvfit)\ndata &lt;- df_lung\n\nfig2 &lt;-\n  coxph(Surv(time, status) ~ age + strata(sex), data = data) |&gt;\n  survfit2() |&gt;\n  ggsurvfit(linewidth = 1) \n\nfig2 |&gt; my_plot_theme()",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>生存分析图片绘制</span>"
+    ]
+  },
+  {
+    "objectID": "km-figure.html#竞争分析模型",
+    "href": "km-figure.html#竞争分析模型",
+    "title": "\n5  生存分析图片绘制\n",
+    "section": "\n5.3 竞争分析模型",
+    "text": "5.3 竞争分析模型\ndeath_cr为3分类变量\n\nR codelibrary(tidycmprsk)\n\nfig3 &lt;- cuminc(Surv(ttdeath, death_cr) ~ trt, tidycmprsk::trial) |&gt; \n  ggcuminc(outcome = \"death from cancer\") +\n  add_pvalue(caption = \"Gray {p.value}\",pvalue_fun = label_style_pvalue(digits = 3)) # 添加p值\nfig3 |&gt; my_plot_theme()",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>生存分析图片绘制</span>"
+    ]
+  },
+  {
+    "objectID": "PSM.html",
+    "href": "PSM.html",
+    "title": "\n6  倾向性评分匹配\n",
+    "section": "",
+    "text": "6.1 绘图",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>倾向性评分匹配</span>"
+    ]
+  },
+  {
+    "objectID": "PSM.html#绘图",
+    "href": "PSM.html#绘图",
+    "title": "\n6  倾向性评分匹配\n",
+    "section": "",
+    "text": "6.1.1 MatchIt包\n\nR codedf_matchit_results |&gt; plot(type = \"jitter\", interactive = FALSE)\ndf_matchit_results |&gt;\n  summary() |&gt;\n  plot()\n\n\n\n\n\n\nFigure 6.1\n\n\n\n\n\n\n\n\n\nFigure 6.2\n\n\n\n\n\n6.1.2 cobalt包\n\nR codedf_matchit_results |&gt; love.plot(binary = \"std\", thresholds = 0.1, abs = T)\ndf_matchit_results |&gt; bal.plot(\n  var.name = \"distance\", which = \"both\",\n  type = \"histogram\", mirror = TRUE\n)\n\n\n\n\n\n\nFigure 6.3\n\n\n\n\n\n\n\n\n\nFigure 6.4",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>倾向性评分匹配</span>"
+    ]
+  },
+  {
+    "objectID": "PSM.html#基线表",
+    "href": "PSM.html#基线表",
+    "title": "\n6  倾向性评分匹配\n",
+    "section": "\n6.2 基线表",
+    "text": "6.2 基线表\n\nR codetbl_pre_match &lt;-\n  data |&gt;\n  tbl_summary(\n    by = trt, # group variable\n    digits = list(\n      all_continuous() ~ 2,\n      all_categorical() ~ c(0, 1),\n      \"age\" ~ 0\n    ),\n    include = c(\"age\", \"marker\", \"stage\", \"grade\", \"death\")\n  ) |&gt;\n  add_difference(\n    test = everything() ~ \"smd\",\n    estimate_fun = ~ label_style_number(digits = 3)\n  )\n\ntbl_post_match &lt;-\n  df_post_match |&gt;\n  tbl_summary(\n    by = trt,\n    digits = list(\n      all_continuous() ~ 2,\n      all_categorical() ~ c(0, 1),\n      \"age\" ~ 0\n    ),\n    include = c(\"age\", \"marker\", \"stage\", \"grade\", \"death\")\n  ) |&gt;\n  add_difference(\n    test = everything() ~ \"smd\",\n    estimate_fun = ~ label_style_number(digits = 3)\n  )\n\ntbl_set &lt;-\n  function(tbl) {\n    tbl |&gt;\n      modify_header(\n        all_stat_cols() ~ \"**{level}**  \\nN= {n}\",\n        estimate ~ \"**SMD**\" # rename Difference to SMD\n      ) |&gt;\n      modify_column_hide(columns = \"conf.low\") |&gt; # hide 95%CI\n      bold_labels() |&gt;\n      add_stat_label() |&gt;\n      italicize_levels() |&gt;\n      add_p(pvalue_fun = label_style_pvalue(digits = 3))\n  }\n\ndesc_pre_match &lt;- tbl_pre_match |&gt; tbl_set()  \ndesc_post_match &lt;- tbl_post_match |&gt; tbl_set()  \n\ntbl_merge(\n    tbls = list(desc_pre_match, desc_post_match),\n    tab_spanner = c(\"**pre match**\", \"**post match**\")\n  )\n\n\n\n\nTable 1: Baseline Characteristics\n\n\n\n\n\n\n\n\n\n\n\n\n\nCharacteristic\n\npre match\n\n\npost match\n\n\n\n\nDrug A N= 83\n\nDrug B N= 90\n\nSMD1\n\n\np-value2\n\n\nDrug A N= 67\n\nDrug B N= 67\n\nSMD1\n\n\np-value2\n\n\n\n\n\nAge, Median (Q1, Q3)\n46 (36, 60)\n48 (38, 56)\n-0.036\n0.720\n46 (36, 60)\n47 (38, 56)\n-0.010\n0.789\n\n\nMarker Level (ng/mL), Median (Q1, Q3)\n0.82 (0.22, 1.55)\n0.54 (0.21, 1.20)\n0.190\n0.175\n0.95 (0.27, 1.71)\n0.60 (0.22, 1.21)\n0.216\n0.146\n\n\nT Stage, n (%)\n\n\n0.123\n0.885\n\n\n0.083\n0.973\n\n\n    T1\n24 (28.9%)\n22 (24.4%)\n\n\n17 (25.4%)\n19 (28.4%)\n\n\n\n\n    T2\n22 (26.5%)\n28 (31.1%)\n\n\n19 (28.4%)\n19 (28.4%)\n\n\n\n\n    T3\n17 (20.5%)\n18 (20.0%)\n\n\n13 (19.4%)\n13 (19.4%)\n\n\n\n\n    T4\n20 (24.1%)\n22 (24.4%)\n\n\n18 (26.9%)\n16 (23.9%)\n\n\n\n\nGrade, n (%)\n\n\n0.089\n0.843\n\n\n0.038\n0.976\n\n\n    I\n32 (38.6%)\n31 (34.4%)\n\n\n26 (38.8%)\n26 (38.8%)\n\n\n\n\n    II\n25 (30.1%)\n28 (31.1%)\n\n\n19 (28.4%)\n18 (26.9%)\n\n\n\n\n    III\n26 (31.3%)\n31 (34.4%)\n\n\n22 (32.8%)\n23 (34.3%)\n\n\n\n\nPatient Died, n (%)\n39 (47.0%)\n52 (57.8%)\n-0.217\n0.156\n33 (49.3%)\n32 (47.8%)\n0.030\n0.863\n\n\n\n\n\n1 Standardized Mean Difference\n\n\n\n2 Wilcoxon rank sum test; Pearson’s Chi-squared test",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>倾向性评分匹配</span>"
+    ]
+  },
+  {
+    "objectID": "PSM.html#条件logistic回归",
+    "href": "PSM.html#条件logistic回归",
+    "title": "\n6  倾向性评分匹配\n",
+    "section": "\n6.3 条件logistic回归",
+    "text": "6.3 条件logistic回归\n\nR codelibrary(survival)\nmodel_clog &lt;-\n  reformulate(\n    data |&gt; select(ttdeath) |&gt; colnames(),\n    response = \"I(response == '1')\"\n  )\n\nclogit(model_clog,\n  data = df_post_match,\n  weights = weights, method = \"breslow\"\n) |&gt;\n  tbl_regression(\n    exponentiate = T,\n  ) |&gt;\n  bold_p(t = 0.05) \n\n\n\n\n\nCharacteristic\n\nOR1\n\n\n95% CI1\n\np-value\n\n\nMonths to Death/Censor\n1.08\n0.99, 1.18\n0.082\n\n\n\n1 OR = Odds Ratio, CI = Confidence Interval",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>倾向性评分匹配</span>"
+    ]
+  }
+]

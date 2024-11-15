@@ -1,5 +1,6 @@
 project:
   type: book
+  output-dir: docs
 
 book:
   title: "Rnotebook"
@@ -35,7 +36,7 @@ format:
     code-link: true # 代码链接
     code-summary: "R code"
     highlight-style: atom-one
-    cache: true
+    cache: false
 
 knitr:
   opts_chunk: 
