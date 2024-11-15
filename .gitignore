@@ -1,0 +1,5 @@
+/.quarto/
+_book/
+.vscode/
+*_cache/
+*_files/
