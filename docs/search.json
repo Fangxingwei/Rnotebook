@@ -90,11 +90,11 @@
     ]
   },
   {
-    "objectID": "excel-table.html",
-    "href": "excel-table.html",
+    "objectID": "word-table.html",
+    "href": "word-table.html",
     "title": "\n4  表格结果导出word\n",
     "section": "",
-    "text": "save_as_docx() 函数可以导出表格为word文件，但是默认的表格样式比较丑，需要自定义表格样式，可以使用flextable包来美化表格。max_row控制显示的行数，show_coltype控制是否显示列类型。prop_section函数可以设置纸张大小，page_size(orient = \"portrait\") 设置为纵向，page_size(orient = \"landscape\") 设置为横向。\n\nR codelibrary(tidyverse)\nlibrary(officer)\nlibrary(flextable)\n\nft &lt;- mtcars |&gt; as_flextable(max_row = 10, show_coltype = F)\n# ft |&gt; save_as_docx(\n#   path = \"table.docx\",\n#   pr_section = prop_section(\n#     page_size(orient = \"portrait\") # \"landscape\" width和height 控制纸张大小\n#   )\n# )\n# print(ft, preview = \"docx\") # 渲染成对应文件\nft\n\n\n\n\n\nmpg\ncyl\ndisp\nhp\ndrat\nwt\nqsec\nvs\nam\ngear\ncarb\n\n\n\n21.0\n6\n160.0\n110\n3.9\n2.6\n16.5\n0\n1\n4\n4\n\n\n21.0\n6\n160.0\n110\n3.9\n2.9\n17.0\n0\n1\n4\n4\n\n\n22.8\n4\n108.0\n93\n3.8\n2.3\n18.6\n1\n1\n4\n1\n\n\n21.4\n6\n258.0\n110\n3.1\n3.2\n19.4\n1\n0\n3\n1\n\n\n18.7\n8\n360.0\n175\n3.1\n3.4\n17.0\n0\n0\n3\n2\n\n\n18.1\n6\n225.0\n105\n2.8\n3.5\n20.2\n1\n0\n3\n1\n\n\n14.3\n8\n360.0\n245\n3.2\n3.6\n15.8\n0\n0\n3\n4\n\n\n24.4\n4\n146.7\n62\n3.7\n3.2\n20.0\n1\n0\n4\n2\n\n\n22.8\n4\n140.8\n95\n3.9\n3.1\n22.9\n1\n0\n4\n2\n\n\n19.2\n6\n167.6\n123\n3.9\n3.4\n18.3\n1\n0\n4\n4\n\n\nn: 32",
+    "text": "4.1 调整数值的位数\ncolformat_double 函数可以调整数字的位数。其他类型如字符型可以使用colformat_character等函数进行调整。\nR codemod &lt;- lm(mpg ~ wt + cyl, data = mtcars)\nmod |&gt; \n  tidy() |&gt; \n  as_flextable(max_row = 10, show_coltype = F) |&gt; \n  colformat_double(digits=3)\n\n\n\n\n\nterm\nestimate\nstd.error\nstatistic\np.value\n\n\n\n(Intercept)\n39.686\n1.715\n23.141\n0.000\n\n\nwt\n-3.191\n0.757\n-4.216\n0.000\n\n\ncyl\n-1.508\n0.415\n-3.636\n0.001\n\n\nn: 3",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>表格结果导出word</span>"
     ]
@@ -170,43 +170,33 @@
     ]
   },
   {
-    "objectID": "word-table.html",
-    "href": "word-table.html",
-    "title": "\n4  表格结果导出word\n",
-    "section": "",
-    "text": "4.1 调整数值的位数\ncolformat_double 函数可以调整数字的位数。其他类型如字符型可以使用colformat_character等函数进行调整。\nR codemod &lt;- lm(mpg ~ wt + cyl, data = mtcars)\nmod |&gt; \n  tidy() |&gt; \n  as_flextable(max_row = 10, show_coltype = F) |&gt; \n  colformat_double(digits=3)\n\n\n\n\n\nterm\nestimate\nstd.error\nstatistic\np.value\n\n\n\n(Intercept)\n39.686\n1.715\n23.141\n0.000\n\n\nwt\n-3.191\n0.757\n-4.216\n0.000\n\n\ncyl\n-1.508\n0.415\n-3.636\n0.001\n\n\nn: 3",
-    "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>表格结果导出word</span>"
-    ]
-  },
-  {
     "objectID": "DTComPair.html",
     "href": "DTComPair.html",
-    "title": "\n7  比较“配对”研究设计中二分类诊断测试的准确性，即当每个测试应用于研究中的每个受试者时。\n",
+    "title": "\n7  诊断模型的准确性比较\n",
     "section": "",
     "text": "7.1 单检验与金标准比较\nR codelibrary(DTComPair)\nlibrary(flextable)\nlibrary(tidyverse)\ndata(Paired1) # Hypothetical study data\nhead(Paired1)\n\n\n\n\nd\ny1\ny2\n\n\n\n1\n1\n1\n\n\n1\n1\n1\n\n\n1\n1\n1\n\n\n1\n1\n1\n\n\n1\n1\n1\n\n\n1\n1\n1\n\n\n\n\n\nR codea1 &lt;- tab.1test(d = d, y = y1, data = Paired1)\nprint(a1)\n#&gt; Binary diagnostic test 'y1'\n#&gt; \n#&gt;           Diseased Non-diseased Total\n#&gt; Test pos.      397           84   481\n#&gt; Test neg.       54          177   231\n#&gt; Total          451          261   712\na1 |&gt; acc.1test(method.ci = \"waldci\") # default Wald intervals\n#&gt; Diagnostic accuracy of test 'y1'\n#&gt; \n#&gt; (Estimates, standard errors and 95%-confidence intervals)\n#&gt; \n#&gt;                  Est.         SE  Lower CL  Upper CL\n#&gt; Sensitivity 0.8802661 0.01528718 0.8503038 0.9102284\n#&gt; Specificity 0.6781609 0.02891782 0.6214830 0.7348388\n#&gt; PPV         0.8253638 0.01731081 0.7914353 0.8592924\n#&gt; NPV         0.7662338 0.02784617 0.7116563 0.8208113\n#&gt; \n#&gt;            Est.  SE (log)  Lower CL  Upper CL\n#&gt; PDLR  2.7351124 0.0915147 2.2860079 3.2724472\n#&gt; NDLR  0.1765568 0.1346088 0.1356142 0.2298601",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>比较“配对”研究设计中二分类诊断测试的准确性，即当每个测试应用于研究中的每个受试者时。</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>诊断模型的准确性比较</span>"
     ]
   },
   {
     "objectID": "DTComPair.html#两检验比较",
     "href": "DTComPair.html#两检验比较",
-    "title": "\n7  比较“配对”研究设计中二分类诊断测试的准确性，即当每个测试应用于研究中的每个受试者时。\n",
+    "title": "\n7  诊断模型的准确性比较\n",
     "section": "\n7.2 两检验比较",
     "text": "7.2 两检验比较\n\nR codeb1 &lt;- tab.paired(d = d, y1 = y1, y2 = y2, data = Paired1)\nprint(b1)\n#&gt; Two binary diagnostic tests (paired design)\n#&gt; \n#&gt; Test1: 'y1'\n#&gt; Test2: 'y2'\n#&gt; \n#&gt; Diseased:\n#&gt;            Test1 pos. Test1 neg. Total\n#&gt; Test2 pos.        319         22   341\n#&gt; Test2 neg.         78         32   110\n#&gt; Total             397         54   451\n#&gt; \n#&gt; Non-diseased:\n#&gt;            Test1 pos. Test1 neg. Total\n#&gt; Test2 pos.         31         22    53\n#&gt; Test2 neg.         53        155   208\n#&gt; Total              84        177   261\nb1 |&gt; acc.paired(method.ci = \"scoreci\") # Wilson intervals\n#&gt; Diagnostic accuracy of test 'y1'\n#&gt; \n#&gt; (Estimates, standard errors and 95%-confidence intervals)\n#&gt; \n#&gt;                  Est. SE Lower CL Upper CL\n#&gt; Sensitivity 0.8802661 NA   0.8470   0.9071\n#&gt; Specificity 0.6781609 NA   0.6193   0.7319\n#&gt; PPV         0.8253638 NA   0.7889   0.8567\n#&gt; NPV         0.7662338 NA   0.7076   0.8162\n#&gt; \n#&gt;            Est.  SE (log)  Lower CL  Upper CL\n#&gt; PDLR  2.7351124 0.0915147 2.2860079 3.2724472\n#&gt; NDLR  0.1765568 0.1346088 0.1356142 0.2298601\n#&gt; \n#&gt; ----------------------------------------------------------\n#&gt; Diagnostic accuracy of test 'y2'\n#&gt; \n#&gt; (Estimates, standard errors and 95%-confidence intervals)\n#&gt; \n#&gt;                  Est. SE Lower CL Upper CL\n#&gt; Sensitivity 0.7560976 NA   0.7144   0.7935\n#&gt; Specificity 0.7969349 NA   0.7440   0.8413\n#&gt; PPV         0.8654822 NA   0.8282   0.8957\n#&gt; NPV         0.6540881 NA   0.6002   0.7042\n#&gt; \n#&gt;            Est.  SE (log)  Lower CL  Upper CL\n#&gt; PDLR  3.7234238 0.1255060 2.9114648 4.7618247\n#&gt; NDLR  0.3060507 0.0885996 0.2572629 0.3640906\n\n# \"weighted generalized score statistic (wgs)\"进行检验\npv.wgs(b1)\n#&gt; $ppv\n#&gt;          test1          test2           diff test.statistic        p.value \n#&gt;     0.82536383     0.86548223     0.04011841     5.46588745     0.01939120 \n#&gt; \n#&gt; $npv\n#&gt;          test1          test2           diff test.statistic        p.value \n#&gt;   7.662338e-01   6.540881e-01  -1.121457e-01   1.653540e+01   4.775012e-05 \n#&gt; \n#&gt; $method\n#&gt; [1] \"weighted generalized score statistic (wgs)\"",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>比较“配对”研究设计中二分类诊断测试的准确性，即当每个测试应用于研究中的每个受试者时。</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>诊断模型的准确性比较</span>"
     ]
   },
   {
     "objectID": "DTComPair.html#函数结果导出",
     "href": "DTComPair.html#函数结果导出",
-    "title": "\n7  比较“配对”研究设计中二分类诊断测试的准确性，即当每个测试应用于研究中的每个受试者时。\n",
+    "title": "\n7  诊断模型的准确性比较\n",
     "section": "\n7.3 函数结果导出",
     "text": "7.3 函数结果导出\n两检验比较结果生成word导出\n\nR codepaired_analysis &lt;- function(data, d, y1, y2) {\n  # 创建配对布局\n  paired.layout &lt;- tab.paired(d = data |&gt; pull(d), y1 = data |&gt; pull(y1), y2 = data |&gt; pull(y2), data = data)\n\n  # 灵敏度和特异度使用McNemar配对卡方检验\n  mcnem.results &lt;- sesp.mcnemar(paired.layout)\n\n  # PPV和NPV使用加权广义分数统计量\n  wgs.results &lt;- pv.wgs(paired.layout)\n\n  # 整合结果\n  results &lt;-\n    mcnem.results$sensitivity |&gt;\n    bind_rows(mcnem.results$specificity) |&gt;\n    bind_rows(wgs.results$ppv) |&gt;\n    bind_rows(wgs.results$npv)\n\n  # 添加测试信息\n  output &lt;-\n    results |&gt;\n    mutate(test = glue::glue(\"test1 = {y1} vs test2 = {y2}\")) |&gt;\n    add_column(index = c(\"sensitivity\", \"specificity\", \"ppv\", \"npv\")) |&gt;\n    relocate(test, index)\n\n  return(output)\n}\n\npaired_analysis(data = Paired1, d = \"d\", y1 = \"y1\", y2 = \"y2\") |&gt;\n  as_flextable(max_row = 10, show_coltype = F) |&gt;\n  colformat_double(digits = 3)\n\n\n\n\n\ntest\nindex\ntest1\ntest2\ndiff\ntest.statistic\np.value\n\n\n\ntest1 = y1 vs test2 = y2\nsensitivity\n0.880\n0.756\n-0.124\n31.360\n0.000\n\n\ntest1 = y1 vs test2 = y2\nspecificity\n0.678\n0.797\n0.119\n12.813\n0.000\n\n\ntest1 = y1 vs test2 = y2\nppv\n0.825\n0.865\n0.040\n5.466\n0.019\n\n\ntest1 = y1 vs test2 = y2\nnpv\n0.766\n0.654\n-0.112\n16.535\n0.000\n\n\nn: 4",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>比较“配对”研究设计中二分类诊断测试的准确性，即当每个测试应用于研究中的每个受试者时。</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>诊断模型的准确性比较</span>"
     ]
   }
 ]
