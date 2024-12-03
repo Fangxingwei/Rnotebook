@@ -1,0 +1,63 @@
+# 诊断模型的准确性比较
+
+可以计算和比较的诊断准确性指标是灵敏度、特异性、阳性和阴性预测值以及阳性和阴性诊断似然比。
+
+## 单检验与金标准比较
+```{r}
+library(DTComPair)
+library(flextable)
+library(tidyverse)
+data(Paired1) # Hypothetical study data
+head(Paired1)
+a1 <- tab.1test(d = d, y = y1, data = Paired1)
+print(a1)
+a1 |> acc.1test(method.ci = "waldci") # default Wald intervals
+```
+
+## 两检验比较
+
+```{r}
+b1 <- tab.paired(d = d, y1 = y1, y2 = y2, data = Paired1)
+print(b1)
+b1 |> acc.paired(method.ci = "scoreci") # Wilson intervals
+
+# "weighted generalized score statistic (wgs)"进行检验
+pv.wgs(b1)
+```
+
+## 函数结果导出
+
+两检验比较结果生成word导出
+
+```{r}
+paired_analysis <- function(data, d, y1, y2) {
+  # 创建配对布局
+  paired.layout <- tab.paired(d = data |> pull(d), y1 = data |> pull(y1), y2 = data |> pull(y2), data = data)
+
+  # 灵敏度和特异度使用McNemar配对卡方检验
+  mcnem.results <- sesp.mcnemar(paired.layout)
+
+  # PPV和NPV使用加权广义分数统计量
+  wgs.results <- pv.wgs(paired.layout)
+
+  # 整合结果
+  results <-
+    mcnem.results$sensitivity |>
+    bind_rows(mcnem.results$specificity) |>
+    bind_rows(wgs.results$ppv) |>
+    bind_rows(wgs.results$npv)
+
+  # 添加测试信息
+  output <-
+    results |>
+    mutate(test = glue::glue("test1 = {y1} vs test2 = {y2}")) |>
+    add_column(index = c("sensitivity", "specificity", "ppv", "npv")) |>
+    relocate(test, index)
+
+  return(output)
+}
+
+paired_analysis(data = Paired1, d = "d", y1 = "y1", y2 = "y2") |>
+  as_flextable(max_row = 10, show_coltype = F) |>
+  colformat_double(digits = 3)
+```

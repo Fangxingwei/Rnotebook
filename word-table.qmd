@@ -13,8 +13,9 @@ execute:
 library(tidyverse)
 library(officer)
 library(flextable)
+library(broom)
 
-ft <- mtcars |> as_flextable(max_row = 10, show_coltype = F)
+ft <- mtcars |> as_flextable(max_row = 10, show_coltype = F) # max_row控制显示行数
 # ft |> save_as_docx(
 #   path = "table.docx",
 #   pr_section = prop_section(
@@ -25,3 +26,16 @@ ft <- mtcars |> as_flextable(max_row = 10, show_coltype = F)
 ft
 ```
 
+## 调整数值的位数
+
+
+`colformat_double` 函数可以调整数字的位数。其他类型如字符型可以使用`colformat_character`等函数进行调整。
+
+
+```{r}
+mod <- lm(mpg ~ wt + cyl, data = mtcars)
+mod |> 
+  tidy() |> 
+  as_flextable(max_row = 10, show_coltype = F) |> 
+  colformat_double(digits=3)
+```

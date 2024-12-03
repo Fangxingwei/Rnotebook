@@ -11,9 +11,10 @@ book:
     - table1.qmd
     - Logistic-table.qmd
     - Cox-table.qmd
-    - excel-table.qmd
+    - word-table.qmd
     - km-figure.qmd
     - PSM.qmd
+    - DTComPair.qmd
 
 lightbox: true
 execute:
