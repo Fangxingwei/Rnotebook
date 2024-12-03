@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.39">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
 <title>7&nbsp; 诊断模型的准确性比较 – Rnotebook</title>
 <style>
 code{white-space: pre-wrap;}
@@ -53,6 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 </style>
 
+
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
@@ -66,10 +70,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-e8fb9d25728d58bfeac61b497e4a6629.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-9e2e813507ddc9625f3749a224ceecaf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -95,13 +100,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><link href="site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
-<script src="site_libs/tabwid-1.1.3/tabwid.js"></script><link rel="stylesheet" href="styles.css">
+}</script>
+<link href="site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+
+<link rel="stylesheet" href="styles.css">
 </head>
+
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
@@ -112,9 +124,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <i class="bi bi-search"></i>
       </button>
     </div>
-  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Rnotebook</a> 
     </div>
@@ -126,7 +142,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-<li class="sidebar-item">
+        <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
@@ -175,23 +191,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
 </li>
     </ul>
-</div>
-</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-<li><a href="#%E5%8D%95%E6%A3%80%E9%AA%8C%E4%B8%8E%E9%87%91%E6%A0%87%E5%87%86%E6%AF%94%E8%BE%83" id="toc-单检验与金标准比较" class="nav-link active" data-scroll-target="#%E5%8D%95%E6%A3%80%E9%AA%8C%E4%B8%8E%E9%87%91%E6%A0%87%E5%87%86%E6%AF%94%E8%BE%83"><span class="header-section-number">7.1</span> 单检验与金标准比较</a></li>
-  <li><a href="#%E4%B8%A4%E6%A3%80%E9%AA%8C%E6%AF%94%E8%BE%83" id="toc-两检验比较" class="nav-link" data-scroll-target="#%E4%B8%A4%E6%A3%80%E9%AA%8C%E6%AF%94%E8%BE%83"><span class="header-section-number">7.2</span> 两检验比较</a></li>
-  <li><a href="#%E5%87%BD%E6%95%B0%E7%BB%93%E6%9E%9C%E5%AF%BC%E5%87%BA" id="toc-函数结果导出" class="nav-link" data-scroll-target="#%E5%87%BD%E6%95%B0%E7%BB%93%E6%9E%9C%E5%AF%BC%E5%87%BA"><span class="header-section-number">7.3</span> 函数结果导出</a></li>
-  </ul></nav>
+  <li><a href="#单检验与金标准比较" id="toc-单检验与金标准比较" class="nav-link active" data-scroll-target="#单检验与金标准比较"><span class="header-section-number">7.1</span> 单检验与金标准比较</a></li>
+  <li><a href="#两检验比较" id="toc-两检验比较" class="nav-link" data-scroll-target="#两检验比较"><span class="header-section-number">7.2</span> 两检验比较</a></li>
+  <li><a href="#函数结果导出" id="toc-函数结果导出" class="nav-link" data-scroll-target="#函数结果导出"><span class="header-section-number">7.3</span> 函数结果导出</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">
-<span class="chapter-number">7</span>&nbsp; <span class="chapter-title">诊断模型的准确性比较</span>
-</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">诊断模型的准确性比较</span></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
 </div>
 
 
@@ -205,23 +225,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>可以计算和比较的诊断准确性指标是灵敏度、特异性、阳性和阴性预测值以及阳性和阴性诊断似然比。</p>
-<section id="单检验与金标准比较" class="level2" data-number="7.1"><h2 data-number="7.1" class="anchored" data-anchor-id="单检验与金标准比较">
-<span class="header-section-number">7.1</span> 单检验与金标准比较</h2>
+</header>
+
+
+<p>可以计算和比较的诊断准确性指标是灵敏度、特异性、阳性和阴性预测值以及阳性和阴性诊断似然比。</p>
+<section id="单检验与金标准比较" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="单检验与金标准比较"><span class="header-section-number">7.1</span> 单检验与金标准比较</h2>
 <div class="cell">
-<details open="" class="code-fold"><summary>R code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/chstock/DTComPair">DTComPair</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ardata-fr.github.io/flextable-book/">flextable</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">Paired1</span><span class="op">)</span> <span class="co"># Hypothetical study data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">Paired1</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details><div class="cell-output-display">
+<details open="" class="code-fold">
+<summary>R code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DTComPair)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(flextable)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Paired1) <span class="co"># Hypothetical study data</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(Paired1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
-<thead><tr class="header">
+<thead>
+<tr class="header">
 <th style="text-align: right;">d</th>
 <th style="text-align: right;">y1</th>
 <th style="text-align: right;">y2</th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">1</td>
@@ -257,190 +285,150 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<details open="" class="code-fold"><summary>R code</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">a1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://chstock.github.io/DTComPair/reference/tab.1test.html">tab.1test</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, y <span class="op">=</span> <span class="va">y1</span>, data <span class="op">=</span> <span class="va">Paired1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">a1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Binary diagnostic test 'y1'</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;           Diseased Non-diseased Total</span></span>
-<span><span class="co">#&gt; Test pos.      397           84   481</span></span>
-<span><span class="co">#&gt; Test neg.       54          177   231</span></span>
-<span><span class="co">#&gt; Total          451          261   712</span></span>
-<span><span class="va">a1</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://chstock.github.io/DTComPair/reference/acc.1test.html">acc.1test</a></span><span class="op">(</span>method.ci <span class="op">=</span> <span class="st">"waldci"</span><span class="op">)</span> <span class="co"># default Wald intervals</span></span>
-<span><span class="co">#&gt; Diagnostic accuracy of test 'y1'</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; (Estimates, standard errors and 95%-confidence intervals)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                  Est.         SE  Lower CL  Upper CL</span></span>
-<span><span class="co">#&gt; Sensitivity 0.8802661 0.01528718 0.8503038 0.9102284</span></span>
-<span><span class="co">#&gt; Specificity 0.6781609 0.02891782 0.6214830 0.7348388</span></span>
-<span><span class="co">#&gt; PPV         0.8253638 0.01731081 0.7914353 0.8592924</span></span>
-<span><span class="co">#&gt; NPV         0.7662338 0.02784617 0.7116563 0.8208113</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;            Est.  SE (log)  Lower CL  Upper CL</span></span>
-<span><span class="co">#&gt; PDLR  2.7351124 0.0915147 2.2860079 3.2724472</span></span>
-<span><span class="co">#&gt; NDLR  0.1765568 0.1346088 0.1356142 0.2298601</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details open="" class="code-fold">
+<summary>R code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>a1 <span class="ot">&lt;-</span> <span class="fu">tab.1test</span>(<span class="at">d =</span> d, <span class="at">y =</span> y1, <span class="at">data =</span> Paired1)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(a1)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Binary diagnostic test 'y1'</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           Diseased Non-diseased Total</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test pos.      397           84   481</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test neg.       54          177   231</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Total          451          261   712</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>a1 <span class="sc">|&gt;</span> <span class="fu">acc.1test</span>(<span class="at">method.ci =</span> <span class="st">"waldci"</span>) <span class="co"># default Wald intervals</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Diagnostic accuracy of test 'y1'</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Estimates, standard errors and 95%-confidence intervals)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  Est.         SE  Lower CL  Upper CL</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity 0.8802661 0.01528718 0.8503038 0.9102284</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity 0.6781609 0.02891782 0.6214830 0.7348388</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PPV         0.8253638 0.01731081 0.7914353 0.8592924</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NPV         0.7662338 0.02784617 0.7116563 0.8208113</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            Est.  SE (log)  Lower CL  Upper CL</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PDLR  2.7351124 0.0915147 2.2860079 3.2724472</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NDLR  0.1765568 0.1346088 0.1356142 0.2298601</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section><section id="两检验比较" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="两检验比较">
-<span class="header-section-number">7.2</span> 两检验比较</h2>
+</section>
+<section id="两检验比较" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="两检验比较"><span class="header-section-number">7.2</span> 两检验比较</h2>
 <div class="cell">
-<details open="" class="code-fold"><summary>R code</summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">b1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://chstock.github.io/DTComPair/reference/tab.paired.html">tab.paired</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">d</span>, y1 <span class="op">=</span> <span class="va">y1</span>, y2 <span class="op">=</span> <span class="va">y2</span>, data <span class="op">=</span> <span class="va">Paired1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">b1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Two binary diagnostic tests (paired design)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Test1: 'y1'</span></span>
-<span><span class="co">#&gt; Test2: 'y2'</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Diseased:</span></span>
-<span><span class="co">#&gt;            Test1 pos. Test1 neg. Total</span></span>
-<span><span class="co">#&gt; Test2 pos.        319         22   341</span></span>
-<span><span class="co">#&gt; Test2 neg.         78         32   110</span></span>
-<span><span class="co">#&gt; Total             397         54   451</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Non-diseased:</span></span>
-<span><span class="co">#&gt;            Test1 pos. Test1 neg. Total</span></span>
-<span><span class="co">#&gt; Test2 pos.         31         22    53</span></span>
-<span><span class="co">#&gt; Test2 neg.         53        155   208</span></span>
-<span><span class="co">#&gt; Total              84        177   261</span></span>
-<span><span class="va">b1</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://chstock.github.io/DTComPair/reference/acc.paired.html">acc.paired</a></span><span class="op">(</span>method.ci <span class="op">=</span> <span class="st">"scoreci"</span><span class="op">)</span> <span class="co"># Wilson intervals</span></span>
-<span><span class="co">#&gt; Diagnostic accuracy of test 'y1'</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; (Estimates, standard errors and 95%-confidence intervals)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                  Est. SE Lower CL Upper CL</span></span>
-<span><span class="co">#&gt; Sensitivity 0.8802661 NA   0.8470   0.9071</span></span>
-<span><span class="co">#&gt; Specificity 0.6781609 NA   0.6193   0.7319</span></span>
-<span><span class="co">#&gt; PPV         0.8253638 NA   0.7889   0.8567</span></span>
-<span><span class="co">#&gt; NPV         0.7662338 NA   0.7076   0.8162</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;            Est.  SE (log)  Lower CL  Upper CL</span></span>
-<span><span class="co">#&gt; PDLR  2.7351124 0.0915147 2.2860079 3.2724472</span></span>
-<span><span class="co">#&gt; NDLR  0.1765568 0.1346088 0.1356142 0.2298601</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ----------------------------------------------------------</span></span>
-<span><span class="co">#&gt; Diagnostic accuracy of test 'y2'</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; (Estimates, standard errors and 95%-confidence intervals)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;                  Est. SE Lower CL Upper CL</span></span>
-<span><span class="co">#&gt; Sensitivity 0.7560976 NA   0.7144   0.7935</span></span>
-<span><span class="co">#&gt; Specificity 0.7969349 NA   0.7440   0.8413</span></span>
-<span><span class="co">#&gt; PPV         0.8654822 NA   0.8282   0.8957</span></span>
-<span><span class="co">#&gt; NPV         0.6540881 NA   0.6002   0.7042</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;            Est.  SE (log)  Lower CL  Upper CL</span></span>
-<span><span class="co">#&gt; PDLR  3.7234238 0.1255060 2.9114648 4.7618247</span></span>
-<span><span class="co">#&gt; NDLR  0.3060507 0.0885996 0.2572629 0.3640906</span></span>
-<span></span>
-<span><span class="co"># "weighted generalized score statistic (wgs)"进行检验</span></span>
-<span><span class="fu"><a href="https://chstock.github.io/DTComPair/reference/pv.wgs.html">pv.wgs</a></span><span class="op">(</span><span class="va">b1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $ppv</span></span>
-<span><span class="co">#&gt;          test1          test2           diff test.statistic        p.value </span></span>
-<span><span class="co">#&gt;     0.82536383     0.86548223     0.04011841     5.46588745     0.01939120 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $npv</span></span>
-<span><span class="co">#&gt;          test1          test2           diff test.statistic        p.value </span></span>
-<span><span class="co">#&gt;   7.662338e-01   6.540881e-01  -1.121457e-01   1.653540e+01   4.775012e-05 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $method</span></span>
-<span><span class="co">#&gt; [1] "weighted generalized score statistic (wgs)"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details open="" class="code-fold">
+<summary>R code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>b1 <span class="ot">&lt;-</span> <span class="fu">tab.paired</span>(<span class="at">d =</span> d, <span class="at">y1 =</span> y1, <span class="at">y2 =</span> y2, <span class="at">data =</span> Paired1)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b1)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Two binary diagnostic tests (paired design)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test1: 'y1'</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test2: 'y2'</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Diseased:</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            Test1 pos. Test1 neg. Total</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test2 pos.        319         22   341</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test2 neg.         78         32   110</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Total             397         54   451</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Non-diseased:</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            Test1 pos. Test1 neg. Total</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test2 pos.         31         22    53</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test2 neg.         53        155   208</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Total              84        177   261</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>b1 <span class="sc">|&gt;</span> <span class="fu">acc.paired</span>(<span class="at">method.ci =</span> <span class="st">"scoreci"</span>) <span class="co"># Wilson intervals</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Diagnostic accuracy of test 'y1'</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Estimates, standard errors and 95%-confidence intervals)</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  Est. SE Lower CL Upper CL</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity 0.8802661 NA   0.8470   0.9071</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity 0.6781609 NA   0.6193   0.7319</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PPV         0.8253638 NA   0.7889   0.8567</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NPV         0.7662338 NA   0.7076   0.8162</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            Est.  SE (log)  Lower CL  Upper CL</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PDLR  2.7351124 0.0915147 2.2860079 3.2724472</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NDLR  0.1765568 0.1346088 0.1356142 0.2298601</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------------------------------------------------------</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Diagnostic accuracy of test 'y2'</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Estimates, standard errors and 95%-confidence intervals)</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  Est. SE Lower CL Upper CL</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Sensitivity 0.7560976 NA   0.7144   0.7935</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Specificity 0.7969349 NA   0.7440   0.8413</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PPV         0.8654822 NA   0.8282   0.8957</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NPV         0.6540881 NA   0.6002   0.7042</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            Est.  SE (log)  Lower CL  Upper CL</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PDLR  3.7234238 0.1255060 2.9114648 4.7618247</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NDLR  0.3060507 0.0885996 0.2572629 0.3640906</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="co"># "weighted generalized score statistic (wgs)"进行检验</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="fu">pv.wgs</span>(b1)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ppv</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          test1          test2           diff test.statistic        p.value </span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     0.82536383     0.86548223     0.04011841     5.46588745     0.01939120 </span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $npv</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          test1          test2           diff test.statistic        p.value </span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   7.662338e-01   6.540881e-01  -1.121457e-01   1.653540e+01   4.775012e-05 </span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $method</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "weighted generalized score statistic (wgs)"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-</section><section id="函数结果导出" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="函数结果导出">
-<span class="header-section-number">7.3</span> 函数结果导出</h2>
+</section>
+<section id="函数结果导出" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="函数结果导出"><span class="header-section-number">7.3</span> 函数结果导出</h2>
 <p>两检验比较结果生成word导出</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>R code</summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">paired_analysis</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">d</span>, <span class="va">y1</span>, <span class="va">y2</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># 创建配对布局</span></span>
-<span>  <span class="va">paired.layout</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://chstock.github.io/DTComPair/reference/tab.paired.html">tab.paired</a></span><span class="op">(</span>d <span class="op">=</span> <span class="va">data</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, y1 <span class="op">=</span> <span class="va">data</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">y1</span><span class="op">)</span>, y2 <span class="op">=</span> <span class="va">data</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">y2</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># 灵敏度和特异度使用McNemar配对卡方检验</span></span>
-<span>  <span class="va">mcnem.results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://chstock.github.io/DTComPair/reference/sesp.mcnemar.html">sesp.mcnemar</a></span><span class="op">(</span><span class="va">paired.layout</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># PPV和NPV使用加权广义分数统计量</span></span>
-<span>  <span class="va">wgs.results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://chstock.github.io/DTComPair/reference/pv.wgs.html">pv.wgs</a></span><span class="op">(</span><span class="va">paired.layout</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># 整合结果</span></span>
-<span>  <span class="va">results</span> <span class="op">&lt;-</span></span>
-<span>    <span class="va">mcnem.results</span><span class="op">$</span><span class="va">sensitivity</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="va">mcnem.results</span><span class="op">$</span><span class="va">specificity</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="va">wgs.results</span><span class="op">$</span><span class="va">ppv</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="va">wgs.results</span><span class="op">$</span><span class="va">npv</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="co"># 添加测试信息</span></span>
-<span>  <span class="va">output</span> <span class="op">&lt;-</span></span>
-<span>    <span class="va">results</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>test <span class="op">=</span> <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span><span class="op">(</span><span class="st">"test1 = {y1} vs test2 = {y2}"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/add_column.html">add_column</a></span><span class="op">(</span>index <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sensitivity"</span>, <span class="st">"specificity"</span>, <span class="st">"ppv"</span>, <span class="st">"npv"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html">relocate</a></span><span class="op">(</span><span class="va">test</span>, <span class="va">index</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="fu">paired_analysis</span><span class="op">(</span>data <span class="op">=</span> <span class="va">Paired1</span>, d <span class="op">=</span> <span class="st">"d"</span>, y1 <span class="op">=</span> <span class="st">"y1"</span>, y2 <span class="op">=</span> <span class="st">"y2"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://davidgohel.github.io/flextable/reference/as_flextable.html">as_flextable</a></span><span class="op">(</span>max_row <span class="op">=</span> <span class="fl">10</span>, show_coltype <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://davidgohel.github.io/flextable/reference/colformat_double.html">colformat_double</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details><div class="cell-output-display">
-<div class="tabwid">
-<style>.cl-92422904{}.cl-922eee70{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-9236b736{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9236b74a{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9236fee4{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236feee{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236fef8{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236fef9{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff02{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff03{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff04{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff0c{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff16{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff17{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff20{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff21{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff22{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff2a{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff2b{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff34{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff35{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff3e{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff3f{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff40{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff48{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff49{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff52{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff53{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff54{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style>
-<table data-quarto-disable-processing="true" class="cl-92422904">
-<thead><tr style="overflow-wrap:break-word;">
-<th class="cl-9236fee4"><p class="cl-9236b736"><span class="cl-922eee70">test</span></p></th>
-<th class="cl-9236feee"><p class="cl-9236b736"><span class="cl-922eee70">index</span></p></th>
-<th class="cl-9236fef8"><p class="cl-9236b74a"><span class="cl-922eee70">test1</span></p></th>
-<th class="cl-9236fef8"><p class="cl-9236b74a"><span class="cl-922eee70">test2</span></p></th>
-<th class="cl-9236fef8"><p class="cl-9236b74a"><span class="cl-922eee70">diff</span></p></th>
-<th class="cl-9236fef9"><p class="cl-9236b74a"><span class="cl-922eee70">test.statistic</span></p></th>
-<th class="cl-9236ff02"><p class="cl-9236b74a"><span class="cl-922eee70">p.value</span></p></th>
-</tr></thead>
-<tbody>
-<tr style="overflow-wrap:break-word;">
-<td class="cl-9236ff03"><p class="cl-9236b736"><span class="cl-922eee70">test1 = y1 vs test2 = y2</span></p></td>
-<td class="cl-9236ff04"><p class="cl-9236b736"><span class="cl-922eee70">sensitivity</span></p></td>
-<td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.880</span></p></td>
-<td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.756</span></p></td>
-<td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">-0.124</span></p></td>
-<td class="cl-9236ff16"><p class="cl-9236b74a"><span class="cl-922eee70">31.360</span></p></td>
-<td class="cl-9236ff17"><p class="cl-9236b74a"><span class="cl-922eee70">0.000</span></p></td>
-</tr>
-<tr style="overflow-wrap:break-word;">
-<td class="cl-9236ff20"><p class="cl-9236b736"><span class="cl-922eee70">test1 = y1 vs test2 = y2</span></p></td>
-<td class="cl-9236ff21"><p class="cl-9236b736"><span class="cl-922eee70">specificity</span></p></td>
-<td class="cl-9236ff22"><p class="cl-9236b74a"><span class="cl-922eee70">0.678</span></p></td>
-<td class="cl-9236ff22"><p class="cl-9236b74a"><span class="cl-922eee70">0.797</span></p></td>
-<td class="cl-9236ff22"><p class="cl-9236b74a"><span class="cl-922eee70">0.119</span></p></td>
-<td class="cl-9236ff2a"><p class="cl-9236b74a"><span class="cl-922eee70">12.813</span></p></td>
-<td class="cl-9236ff2b"><p class="cl-9236b74a"><span class="cl-922eee70">0.000</span></p></td>
-</tr>
-<tr style="overflow-wrap:break-word;">
-<td class="cl-9236ff03"><p class="cl-9236b736"><span class="cl-922eee70">test1 = y1 vs test2 = y2</span></p></td>
-<td class="cl-9236ff04"><p class="cl-9236b736"><span class="cl-922eee70">ppv</span></p></td>
-<td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.825</span></p></td>
-<td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.865</span></p></td>
-<td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.040</span></p></td>
-<td class="cl-9236ff16"><p class="cl-9236b74a"><span class="cl-922eee70">5.466</span></p></td>
-<td class="cl-9236ff17"><p class="cl-9236b74a"><span class="cl-922eee70">0.019</span></p></td>
-</tr>
-<tr style="overflow-wrap:break-word;">
-<td class="cl-9236ff34"><p class="cl-9236b736"><span class="cl-922eee70">test1 = y1 vs test2 = y2</span></p></td>
-<td class="cl-9236ff35"><p class="cl-9236b736"><span class="cl-922eee70">npv</span></p></td>
-<td class="cl-9236ff3e"><p class="cl-9236b74a"><span class="cl-922eee70">0.766</span></p></td>
-<td class="cl-9236ff3e"><p class="cl-9236b74a"><span class="cl-922eee70">0.654</span></p></td>
-<td class="cl-9236ff3e"><p class="cl-9236b74a"><span class="cl-922eee70">-0.112</span></p></td>
-<td class="cl-9236ff3f"><p class="cl-9236b74a"><span class="cl-922eee70">16.535</span></p></td>
-<td class="cl-9236ff40"><p class="cl-9236b74a"><span class="cl-922eee70">0.000</span></p></td>
-</tr>
-</tbody>
-<tfoot><tr style="overflow-wrap:break-word;"><td colspan="7" class="cl-9236ff48"><p class="cl-9236b736"><span class="cl-922eee70">n: 4</span></p></td></tr></tfoot>
-</table>
-</div>
+<details open="" class="code-fold">
+<summary>R code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>paired_analysis <span class="ot">&lt;-</span> <span class="cf">function</span>(data, d, y1, y2) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 创建配对布局</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  paired.layout <span class="ot">&lt;-</span> <span class="fu">tab.paired</span>(<span class="at">d =</span> data <span class="sc">|&gt;</span> <span class="fu">pull</span>(d), <span class="at">y1 =</span> data <span class="sc">|&gt;</span> <span class="fu">pull</span>(y1), <span class="at">y2 =</span> data <span class="sc">|&gt;</span> <span class="fu">pull</span>(y2), <span class="at">data =</span> data)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 灵敏度和特异度使用McNemar配对卡方检验</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  mcnem.results <span class="ot">&lt;-</span> <span class="fu">sesp.mcnemar</span>(paired.layout)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># PPV和NPV使用加权广义分数统计量</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  wgs.results <span class="ot">&lt;-</span> <span class="fu">pv.wgs</span>(paired.layout)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 整合结果</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    mcnem.results<span class="sc">$</span>sensitivity <span class="sc">|&gt;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(mcnem.results<span class="sc">$</span>specificity) <span class="sc">|&gt;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(wgs.results<span class="sc">$</span>ppv) <span class="sc">|&gt;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_rows</span>(wgs.results<span class="sc">$</span>npv)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 添加测试信息</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  output <span class="ot">&lt;-</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    results <span class="sc">|&gt;</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">test =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"test1 = {y1} vs test2 = {y2}"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">add_column</span>(<span class="at">index =</span> <span class="fu">c</span>(<span class="st">"sensitivity"</span>, <span class="st">"specificity"</span>, <span class="st">"ppv"</span>, <span class="st">"npv"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">relocate</span>(test, index)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="fu">paired_analysis</span>(<span class="at">data =</span> Paired1, <span class="at">d =</span> <span class="st">"d"</span>, <span class="at">y1 =</span> <span class="st">"y1"</span>, <span class="at">y2 =</span> <span class="st">"y2"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_flextable</span>(<span class="at">max_row =</span> <span class="dv">10</span>, <span class="at">show_coltype =</span> F) <span class="sc">|&gt;</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-92422904{}.cl-922eee70{font-family:'Arial';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-9236b736{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9236b74a{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-9236fee4{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236feee{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236fef8{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236fef9{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff02{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff03{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff04{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff0c{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff16{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff17{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff20{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff21{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff22{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff2a{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff2b{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff34{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff35{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff3e{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff3f{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff40{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff48{width:1.856in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff49{width:0.947in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff52{width:0.75in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff53{width:1.083in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-9236ff54{width:0.778in;background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-92422904"><thead><tr style="overflow-wrap:break-word;"><th class="cl-9236fee4"><p class="cl-9236b736"><span class="cl-922eee70">test</span></p></th><th class="cl-9236feee"><p class="cl-9236b736"><span class="cl-922eee70">index</span></p></th><th class="cl-9236fef8"><p class="cl-9236b74a"><span class="cl-922eee70">test1</span></p></th><th class="cl-9236fef8"><p class="cl-9236b74a"><span class="cl-922eee70">test2</span></p></th><th class="cl-9236fef8"><p class="cl-9236b74a"><span class="cl-922eee70">diff</span></p></th><th class="cl-9236fef9"><p class="cl-9236b74a"><span class="cl-922eee70">test.statistic</span></p></th><th class="cl-9236ff02"><p class="cl-9236b74a"><span class="cl-922eee70">p.value</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-9236ff03"><p class="cl-9236b736"><span class="cl-922eee70">test1 = y1 vs test2 = y2</span></p></td><td class="cl-9236ff04"><p class="cl-9236b736"><span class="cl-922eee70">sensitivity</span></p></td><td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.880</span></p></td><td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.756</span></p></td><td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">-0.124</span></p></td><td class="cl-9236ff16"><p class="cl-9236b74a"><span class="cl-922eee70">31.360</span></p></td><td class="cl-9236ff17"><p class="cl-9236b74a"><span class="cl-922eee70">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9236ff20"><p class="cl-9236b736"><span class="cl-922eee70">test1 = y1 vs test2 = y2</span></p></td><td class="cl-9236ff21"><p class="cl-9236b736"><span class="cl-922eee70">specificity</span></p></td><td class="cl-9236ff22"><p class="cl-9236b74a"><span class="cl-922eee70">0.678</span></p></td><td class="cl-9236ff22"><p class="cl-9236b74a"><span class="cl-922eee70">0.797</span></p></td><td class="cl-9236ff22"><p class="cl-9236b74a"><span class="cl-922eee70">0.119</span></p></td><td class="cl-9236ff2a"><p class="cl-9236b74a"><span class="cl-922eee70">12.813</span></p></td><td class="cl-9236ff2b"><p class="cl-9236b74a"><span class="cl-922eee70">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9236ff03"><p class="cl-9236b736"><span class="cl-922eee70">test1 = y1 vs test2 = y2</span></p></td><td class="cl-9236ff04"><p class="cl-9236b736"><span class="cl-922eee70">ppv</span></p></td><td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.825</span></p></td><td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.865</span></p></td><td class="cl-9236ff0c"><p class="cl-9236b74a"><span class="cl-922eee70">0.040</span></p></td><td class="cl-9236ff16"><p class="cl-9236b74a"><span class="cl-922eee70">5.466</span></p></td><td class="cl-9236ff17"><p class="cl-9236b74a"><span class="cl-922eee70">0.019</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-9236ff34"><p class="cl-9236b736"><span class="cl-922eee70">test1 = y1 vs test2 = y2</span></p></td><td class="cl-9236ff35"><p class="cl-9236b736"><span class="cl-922eee70">npv</span></p></td><td class="cl-9236ff3e"><p class="cl-9236b74a"><span class="cl-922eee70">0.766</span></p></td><td class="cl-9236ff3e"><p class="cl-9236b74a"><span class="cl-922eee70">0.654</span></p></td><td class="cl-9236ff3e"><p class="cl-9236b74a"><span class="cl-922eee70">-0.112</span></p></td><td class="cl-9236ff3f"><p class="cl-9236b74a"><span class="cl-922eee70">16.535</span></p></td><td class="cl-9236ff40"><p class="cl-9236b74a"><span class="cl-922eee70">0.000</span></p></td></tr></tbody><tfoot><tr style="overflow-wrap:break-word;"><td colspan="7" class="cl-9236ff48"><p class="cl-9236b736"><span class="cl-922eee70">n: 4</span></p></td></tr></tfoot></table></div>
 </div>
 </div>
 
 
 <!-- -->
 
-</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -522,8 +510,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -685,7 +671,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
@@ -910,7 +895,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
       <a href="./PSM.html" class="pagination-link" aria-label="倾向性评分匹配">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">倾向性评分匹配</span></span>
       </a>          
@@ -984,6 +971,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
+
 
 
 
